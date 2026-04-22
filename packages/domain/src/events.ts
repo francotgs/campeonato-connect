@@ -199,6 +199,8 @@ export const matchStartingEventSchema = z.object({
   }),
   myCards: z.array(cardSchema),
   startingChooser: z.union([z.literal(0), z.literal(1)]),
+  /** Slot del propio jugador en la partida (0 = primer jugador, 1 = segundo). */
+  mySlot: z.union([z.literal(0), z.literal(1)]),
   startsAt: z.number().int().nonnegative(),
 });
 export type MatchStartingEvent = z.infer<typeof matchStartingEventSchema>;

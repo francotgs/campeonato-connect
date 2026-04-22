@@ -684,6 +684,7 @@ export class MatchEngineService {
       opponent: { id: other.id, name: other.name, company: other.company },
       myCards,
       startingChooser: state.currentChooser,
+      mySlot: slot,
       startsAt,
     });
   }
