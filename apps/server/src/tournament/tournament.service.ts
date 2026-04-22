@@ -190,6 +190,17 @@ export class TournamentService implements OnModuleInit {
     return player;
   }
 
+  async setChampion(tid: string, championId: string): Promise<void> {
+    await this.redis.mutateJson<PersistedTournament>(
+      RedisKeys.tournament(tid),
+      (cur) => {
+        if (!cur) return null;
+        return { next: { ...cur, championId }, result: { ...cur, championId } };
+      },
+      { ttlSeconds: TOURNAMENT_TTL_SECONDS },
+    );
+  }
+
   async toSummary(tournament: PersistedTournament): Promise<TournamentSummary> {
     return {
       id: tournament.id,

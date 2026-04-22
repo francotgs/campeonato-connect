@@ -1,18 +1,32 @@
-import { msgIdSchema, playerIdSchema, tournamentIdSchema } from "@campeonato/domain";
+import {
+  CLIENT_EVENTS,
+  SERVER_EVENTS,
+  adminOpenRegistrationPayloadSchema,
+  adminPausePayloadSchema,
+  adminResetPayloadSchema,
+  adminResumePayloadSchema,
+  adminStartTournamentPayloadSchema,
+  msgIdSchema,
+  playerIdSchema,
+  tournamentIdSchema,
+} from "@campeonato/domain";
 import { Logger, UseFilters } from "@nestjs/common";
 import {
   ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from "@nestjs/websockets";
-import type { Socket } from "socket.io";
+import type { Server, Socket } from "socket.io";
 import { z } from "zod";
 import { BotService } from "../bot/bot.service";
+import { BracketService } from "../bracket/bracket.service";
 import { GameError } from "../common/game-error";
 import { WsExceptionFilter } from "../common/ws-exception.filter";
 import { ConfigService } from "../config/config.service";
 import { MatchEngineService } from "../match/match-engine.service";
+import { TournamentService } from "../tournament/tournament.service";
 
 const debugStartDuelSchema = z.object({
   msgId: msgIdSchema,
@@ -22,37 +36,104 @@ const debugStartDuelSchema = z.object({
   player0WithBot: z.boolean().optional(),
 });
 
-/**
- * Gateway mínimo de admin para Fase 2. Solo expone `admin:debug_start_duel`
- * para poder disparar una partida 1v1 antes de tener el motor de torneo
- * completo (ese lo cubre Fase 3 con bracket + start_tournament real).
- *
- * Requiere haber hecho handshake con `auth.mode = "admin"` y el
- * `ADMIN_TOKEN` correcto (validado en `TournamentGateway`).
- */
 @UseFilters(WsExceptionFilter)
 @WebSocketGateway({
   cors: { origin: true, credentials: true },
   transports: ["websocket", "polling"],
 })
 export class AdminGateway {
+  @WebSocketServer() server!: Server;
   private readonly logger = new Logger(AdminGateway.name);
 
   constructor(
     private readonly engine: MatchEngineService,
     private readonly bots: BotService,
+    private readonly bracket: BracketService,
+    private readonly tournaments: TournamentService,
     private readonly config: ConfigService,
   ) {}
+
+  // ==========================================================================
+  // Fase 3: motor de torneo
+  // ==========================================================================
+
+  @SubscribeMessage(CLIENT_EVENTS.ADMIN_START_TOURNAMENT)
+  async onStartTournament(
+    @MessageBody() body: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<{ ok: true; bracketSize: number }> {
+    this.requireAdmin(client);
+    const payload = adminStartTournamentPayloadSchema.parse(body);
+    const b = await this.bracket.startTournament(payload.tournamentId);
+    this.logger.log(`admin:start_tournament tid=${payload.tournamentId} size=${b.size}`);
+
+    // Notificar estado del torneo a todos los conectados
+    await this.broadcastTournamentState(payload.tournamentId);
+    return { ok: true, bracketSize: b.size };
+  }
+
+  @SubscribeMessage(CLIENT_EVENTS.ADMIN_OPEN_REGISTRATION)
+  async onOpenRegistration(
+    @MessageBody() body: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<{ ok: true }> {
+    this.requireAdmin(client);
+    const payload = adminOpenRegistrationPayloadSchema.parse(body);
+    await this.bracket.openRegistration(payload.tournamentId);
+    await this.broadcastTournamentState(payload.tournamentId);
+    this.logger.log(`admin:open_registration tid=${payload.tournamentId}`);
+    return { ok: true };
+  }
+
+  @SubscribeMessage(CLIENT_EVENTS.ADMIN_RESET)
+  async onReset(
+    @MessageBody() body: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<{ ok: true }> {
+    this.requireAdmin(client);
+    const payload = adminResetPayloadSchema.parse(body);
+    await this.bracket.resetTournament(payload.tournamentId);
+    await this.broadcastTournamentState(payload.tournamentId);
+    this.logger.log(`admin:reset tid=${payload.tournamentId}`);
+    return { ok: true };
+  }
+
+  @SubscribeMessage(CLIENT_EVENTS.ADMIN_PAUSE)
+  async onPause(
+    @MessageBody() body: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<{ ok: true }> {
+    this.requireAdmin(client);
+    const payload = adminPausePayloadSchema.parse(body);
+    await this.bracket.pauseTournament(payload.tournamentId);
+    await this.broadcastTournamentState(payload.tournamentId);
+    this.logger.log(`admin:pause tid=${payload.tournamentId}`);
+    return { ok: true };
+  }
+
+  @SubscribeMessage(CLIENT_EVENTS.ADMIN_RESUME)
+  async onResume(
+    @MessageBody() body: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<{ ok: true }> {
+    this.requireAdmin(client);
+    const payload = adminResumePayloadSchema.parse(body);
+    await this.bracket.resumeTournament(payload.tournamentId);
+    await this.broadcastTournamentState(payload.tournamentId);
+    this.logger.log(`admin:resume tid=${payload.tournamentId}`);
+    return { ok: true };
+  }
+
+  // ==========================================================================
+  // Fase 2: debug duel (testing pre-bracket)
+  // ==========================================================================
 
   @SubscribeMessage("admin:debug_start_duel")
   async onStartDuel(
     @MessageBody() body: unknown,
     @ConnectedSocket() client: Socket,
   ): Promise<{ ok: true; matchId: string }> {
-    const mode = (client.data?.auth?.mode as string | undefined) ?? "unknown";
-    if (mode !== "admin") {
-      throw new GameError("UNAUTHORIZED", "admin handshake required");
-    }
+    this.requireAdmin(client);
     const payload = debugStartDuelSchema.parse(body);
     let { player0Id, player1Id } = payload;
 
@@ -82,5 +163,25 @@ export class AdminGateway {
       `debug_start_duel tid=${payload.tournamentId} p0=${player0Id} p1=${player1Id} mid=${matchId}`,
     );
     return { ok: true, matchId };
+  }
+
+  // ==========================================================================
+  // Helpers
+  // ==========================================================================
+
+  private requireAdmin(client: Socket): void {
+    const mode = (client.data?.auth?.mode as string | undefined) ?? "unknown";
+    if (mode !== "admin") {
+      throw new GameError("UNAUTHORIZED", "admin handshake required");
+    }
+  }
+
+  private async broadcastTournamentState(tid: string): Promise<void> {
+    const tournament = await this.tournaments.mustGet(tid);
+    const playersCount = await this.tournaments.countHumans(tid);
+    this.server.to(`tournament:${tid}`).emit(SERVER_EVENTS.TOURNAMENT_STATE, {
+      tournament: await this.tournaments.toSummary(tournament),
+      playersCount,
+    });
   }
 }

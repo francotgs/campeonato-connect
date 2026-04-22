@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { LoggerModule } from "nestjs-pino";
 import { AdminModule } from "./admin/admin.module";
 import { BotModule } from "./bot/bot.module";
+import { BracketModule } from "./bracket/bracket.module";
 import { CommonModule } from "./common/common.module";
 import { ConfigModule } from "./config/config.module";
 import { ConfigService } from "./config/config.service";
@@ -35,6 +36,7 @@ import { TournamentModule } from "./tournament/tournament.module";
     TournamentModule,
     BotModule,
     MatchModule,
+    BracketModule,
     AdminModule,
     HealthModule,
   ],

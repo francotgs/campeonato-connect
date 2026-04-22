@@ -25,6 +25,7 @@ import { PlayerService } from "../tournament/player.service";
 import { CatalogService } from "./catalog.service";
 import { buildMatchDecks } from "./deck-builder";
 import { MATCH_EMITTER, type MatchEmitter } from "./match-emitter";
+import { MatchEventService } from "./match-event.service";
 import {
   type PersistedMatchPlayer,
   type PersistedMatchState,
@@ -75,6 +76,7 @@ export class MatchEngineService {
     private readonly players: PlayerService,
     private readonly bots: BotService,
     private readonly config: ConfigService,
+    private readonly matchEvents: MatchEventService,
   ) {}
 
   // ==========================================================================
@@ -645,6 +647,15 @@ export class MatchEngineService {
         this.emitter.emitToPlayer(pid, SERVER_EVENTS.PLAYER_WAITING_NEXT, {});
       }
     }
+
+    // Notificar al BracketService via event bus (sin circular dep)
+    this.matchEvents.emitMatchEnded({
+      matchId: mid,
+      tournamentId: state.tournamentId,
+      winnerId: state.winnerId ?? state.players[winnerSlot].id,
+      round: state.round,
+      bracketSlot: state.bracketSlot,
+    });
   }
 
   // ==========================================================================
