@@ -1,24 +1,27 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter, type NestFastifyApplication } from "@nestjs/platform-fastify";
+import { Logger } from "nestjs-pino";
 import { AppModule } from "./app.module";
+import { WsExceptionFilter } from "./common/ws-exception.filter";
+import { ConfigService } from "./config/config.service";
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: false }),
+    { bufferLogs: true },
   );
+  app.useLogger(app.get(Logger));
+  app.useGlobalFilters(new WsExceptionFilter());
 
-  app.enableCors({
-    origin: process.env.CORS_ORIGIN ?? "http://localhost:3000",
-    credentials: true,
-  });
+  const config = app.get(ConfigService);
+  app.enableCors({ origin: config.get("CORS_ORIGIN"), credentials: true });
+  app.enableShutdownHooks();
 
-  const port = Number(process.env.PORT ?? 4000);
+  const port = config.get("PORT");
   await app.listen(port, "0.0.0.0");
-
-  // eslint-disable-next-line no-console
-  console.log(`[server] listening on http://localhost:${port}`);
+  app.get(Logger).log(`server listening on http://localhost:${port}`);
 }
 
 void bootstrap();

@@ -54,6 +54,9 @@
       "trailingCommas": "all",
       "semicolons": "always",
       "arrowParentheses": "always"
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
     }
   },
   "json": {
@@ -69,6 +72,19 @@
         "rules": {
           "style": {
             "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "include": ["apps/server/**/*.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useImportType": "off"
+          },
+          "correctness": {
+            "noUnusedImports": "off"
           }
         }
       }

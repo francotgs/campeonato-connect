@@ -253,7 +253,8 @@ export const authModeSchema = z.enum(["player", "admin", "viewer"]);
 export type AuthMode = z.infer<typeof authModeSchema>;
 
 export const socketAuthPayloadSchema = z.object({
-  token: z.string().nullable(),
+  token: z.string().nullable().optional(),
   mode: authModeSchema,
+  tournamentId: tournamentIdSchema.optional(),
 });
 export type SocketAuthPayload = z.infer<typeof socketAuthPayloadSchema>;

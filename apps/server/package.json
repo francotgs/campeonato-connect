@@ -5,24 +5,40 @@
   "description": "Backend NestJS + Fastify + Socket.IO del Campeonato MundIAl 4Match.",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "tsx watch src/main.ts",
+    "dev": "node --env-file=.env -r @swc-node/register src/main.ts",
+    "dev:watch": "node --env-file=.env --watch -r @swc-node/register src/main.ts",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/main.js",
+    "start": "node --env-file=.env dist/main.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@campeonato/cards": "workspace:^",
     "@campeonato/domain": "workspace:*",
     "@nestjs/common": "^10.4.15",
     "@nestjs/core": "^10.4.15",
     "@nestjs/platform-fastify": "^10.4.15",
     "@nestjs/platform-socket.io": "^10.4.15",
+    "@nestjs/schedule": "^4",
     "@nestjs/websockets": "^10.4.15",
+    "ioredis": "^5",
+    "jsonwebtoken": "^9",
+    "nestjs-pino": "^4",
+    "pino": "^9",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "uuid": "^10",
+    "zod": "^3"
   },
   "devDependencies": {
+    "@swc-node/register": "^1.11.1",
+    "@swc/core": "^1.15.30",
+    "@types/jsonwebtoken": "^9",
     "@types/node": "^22.10.2",
+    "@types/uuid": "^10",
+    "pino-pretty": "^11",
+    "socket.io-client": "^4.8.3",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   }

@@ -1,5 +1,5 @@
 import { type Card, cardSchema } from "@campeonato/domain";
-import catalog from "./catalog.json" with { type: "json" };
+import catalog from "./catalog.json";
 
 let cached: readonly Card[] | null = null;
 
