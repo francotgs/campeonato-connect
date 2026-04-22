@@ -1,1 +1,1 @@
-export { loadCatalog } from "./loader.js";
+export { filterByMaxOverall, getCatalog, loadCatalog } from "./loader.js";
