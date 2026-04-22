@@ -1,0 +1,22 @@
+{
+  "name": "campeonato-connect",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Campeonato MundIAl 4Match — monorepo del juego de cartas coleccionables para el evento Connect.",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter ./apps/* run dev",
+    "build": "pnpm -r --filter ./apps/* --filter ./packages/* run build",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test": "pnpm --filter @campeonato/domain test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "typescript": "^5.6.3"
+  }
+}
