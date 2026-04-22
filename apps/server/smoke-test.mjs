@@ -2,7 +2,7 @@
  * Smoke test Fase 2 — dos jugadores humanos + admin dispara el duelo.
  * Corre con: node apps/server/smoke-test.mjs
  */
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:4000";
@@ -36,7 +36,7 @@ function emitAck(socket, event, payload, timeoutMs = 8000) {
     const timer = setTimeout(() => reject(new Error(`Timeout on ack '${event}'`)), timeoutMs);
     socket.emit(event, payload, (response) => {
       clearTimeout(timer);
-      if (response && response.code) {
+      if (response?.code) {
         reject(new Error(`Server error on '${event}': ${JSON.stringify(response)}`));
       } else {
         resolve(response);

@@ -1,5 +1,5 @@
+import { randomUUID } from "node:crypto";
 import { io } from "socket.io-client";
-import { randomUUID } from "crypto";
 
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN ?? "dev-admin-token";
 const TID = process.env.BOOTSTRAP_TOURNAMENT_ID ?? "t-default";

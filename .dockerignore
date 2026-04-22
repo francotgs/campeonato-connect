@@ -1,0 +1,19 @@
+**/node_modules
+**/.next
+**/dist
+**/build
+**/coverage
+**/.turbo
+**/.cache
+**/*.log
+**/.DS_Store
+**/.git
+**/.github
+**/.vscode
+**/.idea
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Keep these for reference inside image if needed
+!**/.env.example

@@ -1,11 +1,12 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import type { Bracket, BracketUpdatedEvent, TournamentStateEvent } from "@campeonato/domain";
 import { CLIENT_EVENTS, SERVER_EVENTS } from "@campeonato/domain";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
-  CheckCircle,
+  CheckCircle2,
   Loader2,
   Pause,
   Play,
@@ -21,6 +22,7 @@ import {
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useRef, useState } from "react";
 import { type Socket, io } from "socket.io-client";
+import { BrandBackground, BrandLogo, Panel, StatusPill } from "./brand";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -51,11 +53,11 @@ const STATUS_LABEL: Record<TournamentStatus, string> = {
   finished: "Finalizado",
 };
 
-const STATUS_COLOR: Record<TournamentStatus, string> = {
-  registration_open: "bg-blue-500/20 text-blue-300 border-blue-500/40",
-  running: "bg-green-500/20 text-green-300 border-green-500/40",
-  paused: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
-  finished: "bg-purple-500/20 text-purple-300 border-purple-500/40",
+const STATUS_TONE: Record<TournamentStatus, "primary" | "live" | "gold" | "muted" | "warning"> = {
+  registration_open: "primary",
+  running: "live",
+  paused: "warning",
+  finished: "gold",
 };
 
 // ---------------------------------------------------------------------------
@@ -74,18 +76,18 @@ function StatCard({
   highlight?: boolean;
 }) {
   return (
-    <div
-      className={[
-        "flex flex-col gap-2 p-4 rounded-xl border transition-all",
-        highlight ? "border-green-500/40 bg-green-950/30" : "border-gray-700/50 bg-gray-900/60",
-      ].join(" ")}
+    <Panel
+      className={cn(
+        "flex flex-col gap-2 p-4 transition-all",
+        highlight && "border-emerald-500/40 bg-[rgba(6,78,59,0.3)] glow-primary",
+      )}
     >
-      <div className="flex items-center gap-2 text-gray-400 text-xs uppercase tracking-widest">
+      <div className="flex items-center gap-2 text-white/50 text-[10px] uppercase tracking-[0.2em] font-bold">
         {icon}
         {label}
       </div>
-      <p className="text-3xl font-black text-white tabular-nums">{value}</p>
-    </div>
+      <p className="text-3xl font-black text-white tabular-nums leading-none">{value}</p>
+    </Panel>
   );
 }
 
@@ -104,15 +106,15 @@ function ActionButton({
   label: string;
   icon: React.ReactNode;
   onClick: () => void;
-  variant?: "default" | "success" | "warning" | "danger";
+  variant?: "default" | "primary" | "warning" | "danger";
   disabled?: boolean;
   loading?: boolean;
 }) {
-  const colors = {
-    default: "bg-gray-700 hover:bg-gray-600 border-gray-600",
-    success: "bg-green-700 hover:bg-green-600 border-green-600",
-    warning: "bg-yellow-700 hover:bg-yellow-600 border-yellow-600",
-    danger: "bg-red-800 hover:bg-red-700 border-red-700",
+  const styles = {
+    default: "bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-white",
+    primary: "bg-emerald-500 hover:bg-emerald-400 border-emerald-400 text-black",
+    warning: "bg-amber-500 hover:bg-amber-400 border-amber-400 text-black",
+    danger: "bg-red-500/90 hover:bg-red-500 border-red-500/60 text-white",
   };
 
   return (
@@ -120,12 +122,13 @@ function ActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className={[
-        "flex items-center gap-2 px-5 py-3 rounded-lg border font-semibold text-sm",
-        "transition-all duration-150 active:scale-95",
+      className={cn(
+        "flex items-center gap-2 px-5 py-3 rounded-xl border font-bold text-sm",
+        "transition-all duration-150 active:scale-[0.97]",
         "disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100",
-        colors[variant],
-      ].join(" ")}
+        "shadow-lg",
+        styles[variant],
+      )}
     >
       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : icon}
       {label}
@@ -146,22 +149,24 @@ function ResetConfirmDialog({
 }) {
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-gray-900 border border-red-700/50 rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl"
-        initial={{ scale: 0.9, y: 20 }}
+        className="bg-[var(--bg-elevated)] border border-red-500/40 rounded-2xl p-7 max-w-sm w-full shadow-2xl"
+        initial={{ scale: 0.9, y: 16 }}
         animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
+        exit={{ scale: 0.9, y: 16 }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <AlertTriangle className="w-6 h-6 text-red-400" />
-          <h2 className="text-lg font-bold text-white">Confirmar Reset</h2>
+          <div className="size-10 rounded-full bg-red-500/15 flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-red-400" />
+          </div>
+          <h2 className="text-lg font-black text-white">Confirmar reset</h2>
         </div>
-        <p className="text-gray-400 text-sm mb-6">
+        <p className="text-white/60 text-sm mb-6 leading-relaxed">
           Esto eliminará todos los jugadores, partidas y el bracket actual. El torneo volverá al
           estado de inscripción. Esta acción no se puede deshacer.
         </p>
@@ -169,14 +174,14 @@ function ResetConfirmDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm font-semibold"
+            className="flex-1 py-2.5 rounded-xl border border-white/10 text-white/80 hover:bg-white/5 transition-colors text-sm font-bold"
           >
             Cancelar
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="flex-1 py-2.5 rounded-lg bg-red-700 hover:bg-red-600 text-white transition-colors text-sm font-semibold"
+            className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 text-white transition-colors text-sm font-black"
           >
             Sí, resetear
           </button>
@@ -192,18 +197,20 @@ function ResetConfirmDialog({
 
 function QrBlock({ url, label }: { url: string; label: string }) {
   return (
-    <div className="flex flex-col items-center gap-3 p-5 rounded-xl border border-gray-700/50 bg-gray-900/60">
-      <p className="text-xs uppercase tracking-widest text-gray-500 font-semibold">{label}</p>
+    <Panel className="flex flex-col items-center gap-3 p-5">
+      <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">{label}</p>
       <div className="p-3 bg-white rounded-xl">
-        <QRCodeSVG value={url} size={140} />
+        <QRCodeSVG value={url} size={144} />
       </div>
-      <p className="text-[11px] text-gray-500 text-center break-all max-w-[160px]">{url}</p>
-    </div>
+      <p className="text-[10px] text-white/40 text-center break-all max-w-[160px] font-mono">
+        {url}
+      </p>
+    </Panel>
   );
 }
 
 // ---------------------------------------------------------------------------
-// AdminPanel — main export
+// AdminPanel
 // ---------------------------------------------------------------------------
 
 type Props = {
@@ -232,13 +239,11 @@ export function AdminPanel({ token }: Props) {
 
   const socketRef = useRef<Socket | null>(null);
 
-  // Show temporary feedback toast
   const toast = (ok: boolean, msg: string) => {
     setFeedback({ ok, msg });
     setTimeout(() => setFeedback(null), 3000);
   };
 
-  // Emit admin command with UUID msgId
   const emit = (event: string, extra?: Record<string, unknown>): Promise<unknown> =>
     new Promise((resolve) => {
       socketRef.current?.emit(
@@ -248,9 +253,6 @@ export function AdminPanel({ token }: Props) {
       );
     });
 
-  // ------------------------------------------------------------------
-  // Socket setup
-  // ------------------------------------------------------------------
   useEffect(() => {
     const socket = io(SOCKET_URL, {
       auth: { mode: "admin", token, tournamentId: TID },
@@ -267,7 +269,7 @@ export function AdminPanel({ token }: Props) {
       if (err.code === "UNAUTHORIZED") {
         setState((s) => ({
           ...s,
-          authError: "Token inválido. Verificá la URL.",
+          authError: "Token inválido. Verificá la URL del panel.",
           connected: false,
         }));
         socket.disconnect();
@@ -301,9 +303,6 @@ export function AdminPanel({ token }: Props) {
     };
   }, [SOCKET_URL, TID, token]);
 
-  // ------------------------------------------------------------------
-  // Handlers
-  // ------------------------------------------------------------------
   const handleOpenRegistration = async () => {
     setLoading("open");
     const ack = (await emit(CLIENT_EVENTS.ADMIN_OPEN_REGISTRATION)) as { ok: boolean };
@@ -340,222 +339,214 @@ export function AdminPanel({ token }: Props) {
     toast(ack?.ok, ack?.ok ? "Torneo reseteado" : "Error al resetear");
   };
 
-  // ------------------------------------------------------------------
-  // Derived URLs for QR
-  // ------------------------------------------------------------------
   const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
   const joinUrl = `${origin}/join/${TID}`;
   const bracketUrl = `${origin}/bracket/${TID}`;
 
-  // ------------------------------------------------------------------
-  // Auth error screen
-  // ------------------------------------------------------------------
   if (state.authError) {
     return (
-      <div className="flex min-h-screen items-center justify-center flex-col gap-4">
-        <Shield className="w-12 h-12 text-red-400" />
-        <p className="text-red-400 text-lg font-bold">{state.authError}</p>
-        <p className="text-gray-500 text-sm">
-          URL esperada:{" "}
-          <code className="text-gray-300">
-            {origin}/admin/{"<ADMIN_TOKEN>"}
-          </code>
-        </p>
-      </div>
+      <BrandBackground variant="subtle">
+        <div className="flex min-h-screen items-center justify-center flex-col gap-4 px-6 text-center">
+          <div className="size-16 rounded-2xl bg-red-500/15 flex items-center justify-center">
+            <Shield className="w-8 h-8 text-red-400" />
+          </div>
+          <h1 className="text-red-400 text-xl font-black">{state.authError}</h1>
+          <p className="text-white/50 text-sm max-w-xs">
+            URL esperada:{" "}
+            <code className="text-white/80 font-mono text-xs">
+              {origin}/admin/&lt;ADMIN_TOKEN&gt;
+            </code>
+          </p>
+        </div>
+      </BrandBackground>
     );
   }
 
-  // ------------------------------------------------------------------
-  // Render
-  // ------------------------------------------------------------------
   const { status, connected } = state;
   const totalRounds = state.bracketSize > 0 ? Math.log2(state.bracketSize) : 0;
 
   return (
-    <div className="min-h-screen p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <header className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <Shield className="w-7 h-7 text-yellow-400" />
-          <div>
-            <h1 className="text-xl font-black text-white leading-none">{state.tournamentName}</h1>
-            <p className="text-xs text-gray-500 uppercase tracking-widest mt-0.5">
-              Panel de administración
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {connected ? (
-            <>
-              <Wifi className="w-4 h-4 text-green-400" />
-              <span className="text-xs text-green-400 font-semibold">Conectado</span>
-            </>
-          ) : (
-            <>
-              <WifiOff className="w-4 h-4 text-red-400" />
-              <span className="text-xs text-red-400 font-semibold">Reconectando…</span>
-            </>
-          )}
-        </div>
-      </header>
-
-      {/* Status badge */}
-      {status && (
-        <div className="mb-6">
-          <span
-            className={[
-              "inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest",
-              STATUS_COLOR[status],
-            ].join(" ")}
-          >
-            {status === "running" && (
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+    <BrandBackground>
+      <div className="min-h-screen p-5 sm:p-8 max-w-5xl mx-auto">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-8 flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <BrandLogo size="sm" tone="gold" />
+            <div className="h-9 w-px bg-white/10" />
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-amber-400" />
+              <span className="text-xs text-amber-300 uppercase tracking-[0.25em] font-black">
+                Panel admin
               </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-default">
+            {connected ? (
+              <>
+                <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-xs text-emerald-300 font-bold">Conectado</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="w-3.5 h-3.5 text-red-400" />
+                <span className="text-xs text-red-400 font-bold">Reconectando…</span>
+              </>
             )}
-            {STATUS_LABEL[status]}
-          </span>
+          </div>
+        </header>
+
+        {/* Tournament title + status */}
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-white/40 font-bold">
+              Torneo
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+              {state.tournamentName}
+            </h2>
+          </div>
+          {status && (
+            <StatusPill tone={STATUS_TONE[status]} pulse={status === "running"}>
+              {STATUS_LABEL[status]}
+            </StatusPill>
+          )}
         </div>
-      )}
 
-      {/* Metrics grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <StatCard
-          label="Jugadores"
-          value={state.playersCount}
-          icon={<Users className="w-3.5 h-3.5" />}
-        />
-        <StatCard
-          label="Partidas activas"
-          value={state.liveMatches}
-          icon={<Zap className="w-3.5 h-3.5" />}
-          highlight={state.liveMatches > 0}
-        />
-        <StatCard
-          label="Ronda"
-          value={totalRounds > 0 ? `${state.currentRound + 1} / ${totalRounds}` : "—"}
-          icon={<RefreshCw className="w-3.5 h-3.5" />}
-        />
-        <StatCard
-          label="Bracket"
-          value={state.bracketSize > 0 ? state.bracketSize : "—"}
-          icon={<Trophy className="w-3.5 h-3.5" />}
-        />
-      </div>
-
-      {/* Action buttons */}
-      <section className="mb-8">
-        <h2 className="text-xs uppercase tracking-widest text-gray-500 font-semibold mb-3">
-          Controles
-        </h2>
-        <div className="flex flex-wrap gap-3">
-          {/* Open registration — shown when paused or finished */}
-          {(status === "paused" || status === "finished") && (
-            <ActionButton
-              label="Abrir inscripción"
-              icon={<Users className="w-4 h-4" />}
-              onClick={handleOpenRegistration}
-              loading={loading === "open"}
-              disabled={!!loading}
-            />
-          )}
-
-          {/* Start — only when registration is open */}
-          {status === "registration_open" && (
-            <ActionButton
-              label="Iniciar torneo"
-              icon={<Play className="w-4 h-4" />}
-              onClick={handleStart}
-              variant="success"
-              loading={loading === "start"}
-              disabled={!!loading || state.playersCount < 1}
-            />
-          )}
-
-          {/* Pause — only when running */}
-          {status === "running" && (
-            <ActionButton
-              label="Pausar"
-              icon={<Pause className="w-4 h-4" />}
-              onClick={handlePause}
-              variant="warning"
-              loading={loading === "pause"}
-              disabled={!!loading}
-            />
-          )}
-
-          {/* Resume — only when paused */}
-          {status === "paused" && (
-            <ActionButton
-              label="Reanudar"
-              icon={<Play className="w-4 h-4" />}
-              onClick={handleResume}
-              variant="success"
-              loading={loading === "resume"}
-              disabled={!!loading}
-            />
-          )}
-
-          {/* Reset — always available */}
-          <ActionButton
-            label="Reset"
-            icon={<RotateCcw className="w-4 h-4" />}
-            onClick={() => setShowResetConfirm(true)}
-            variant="danger"
-            disabled={!!loading}
+        {/* Metrics grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <StatCard
+            label="Jugadores"
+            value={state.playersCount}
+            icon={<Users className="w-3.5 h-3.5" />}
+          />
+          <StatCard
+            label="Partidas activas"
+            value={state.liveMatches}
+            icon={<Zap className="w-3.5 h-3.5" />}
+            highlight={state.liveMatches > 0}
+          />
+          <StatCard
+            label="Ronda"
+            value={totalRounds > 0 ? `${state.currentRound + 1} / ${totalRounds}` : "—"}
+            icon={<RefreshCw className="w-3.5 h-3.5" />}
+          />
+          <StatCard
+            label="Bracket"
+            value={state.bracketSize > 0 ? state.bracketSize : "—"}
+            icon={<Trophy className="w-3.5 h-3.5" />}
           />
         </div>
 
-        {/* Hint for start button when no players */}
-        {status === "registration_open" && state.playersCount < 1 && (
-          <p className="mt-2 text-xs text-yellow-500">
-            Necesitás al menos 1 jugador inscripto para iniciar.
-          </p>
-        )}
-      </section>
-
-      {/* QR codes */}
-      <section>
-        <h2 className="text-xs uppercase tracking-widest text-gray-500 font-semibold mb-3">
-          Códigos QR
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          <QrBlock url={joinUrl} label="Unirse al torneo" />
-          <QrBlock url={bracketUrl} label="Ver bracket" />
-        </div>
-      </section>
-
-      {/* Feedback toast */}
-      <AnimatePresence>
-        {feedback && (
-          <motion.div
-            className={[
-              "fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 rounded-xl border shadow-xl text-sm font-semibold",
-              feedback.ok
-                ? "bg-green-900/90 border-green-600 text-green-300"
-                : "bg-red-900/90 border-red-600 text-red-300",
-            ].join(" ")}
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-          >
-            {feedback.ok ? (
-              <CheckCircle className="w-4 h-4" />
-            ) : (
-              <AlertTriangle className="w-4 h-4" />
+        {/* Controls */}
+        <section className="mb-8">
+          <h3 className="text-[10px] uppercase tracking-[0.25em] text-white/40 font-bold mb-3">
+            Controles
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {(status === "paused" || status === "finished") && (
+              <ActionButton
+                label="Abrir inscripción"
+                icon={<Users className="w-4 h-4" />}
+                onClick={handleOpenRegistration}
+                loading={loading === "open"}
+                disabled={!!loading}
+              />
             )}
-            {feedback.msg}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Reset confirmation dialog */}
-      <AnimatePresence>
-        {showResetConfirm && (
-          <ResetConfirmDialog onConfirm={handleReset} onCancel={() => setShowResetConfirm(false)} />
-        )}
-      </AnimatePresence>
-    </div>
+            {status === "registration_open" && (
+              <ActionButton
+                label="Iniciar torneo"
+                icon={<Play className="w-4 h-4" />}
+                onClick={handleStart}
+                variant="primary"
+                loading={loading === "start"}
+                disabled={!!loading || state.playersCount < 1}
+              />
+            )}
+
+            {status === "running" && (
+              <ActionButton
+                label="Pausar"
+                icon={<Pause className="w-4 h-4" />}
+                onClick={handlePause}
+                variant="warning"
+                loading={loading === "pause"}
+                disabled={!!loading}
+              />
+            )}
+
+            {status === "paused" && (
+              <ActionButton
+                label="Reanudar"
+                icon={<Play className="w-4 h-4" />}
+                onClick={handleResume}
+                variant="primary"
+                loading={loading === "resume"}
+                disabled={!!loading}
+              />
+            )}
+
+            <ActionButton
+              label="Reset"
+              icon={<RotateCcw className="w-4 h-4" />}
+              onClick={() => setShowResetConfirm(true)}
+              variant="danger"
+              disabled={!!loading}
+            />
+          </div>
+
+          {status === "registration_open" && state.playersCount < 1 && (
+            <p className="mt-3 text-xs text-amber-300 inline-flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5" />
+              Necesitás al menos 1 jugador inscripto para iniciar.
+            </p>
+          )}
+        </section>
+
+        {/* QR codes */}
+        <section>
+          <h3 className="text-[10px] uppercase tracking-[0.25em] text-white/40 font-bold mb-3">
+            Códigos QR
+          </h3>
+          <div className="flex flex-wrap gap-4">
+            <QrBlock url={joinUrl} label="Unirse al torneo" />
+            <QrBlock url={bracketUrl} label="Ver bracket" />
+          </div>
+        </section>
+
+        {/* Toast */}
+        <AnimatePresence>
+          {feedback && (
+            <motion.div
+              className={cn(
+                "fixed bottom-6 right-6 left-6 sm:left-auto flex items-center gap-2 px-4 py-3 rounded-xl border shadow-2xl text-sm font-bold backdrop-blur-md",
+                feedback.ok
+                  ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-200"
+                  : "bg-red-500/15 border-red-500/50 text-red-200",
+              )}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            >
+              {feedback.ok ? (
+                <CheckCircle2 className="w-4 h-4" />
+              ) : (
+                <AlertTriangle className="w-4 h-4" />
+              )}
+              {feedback.msg}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showResetConfirm && (
+            <ResetConfirmDialog
+              onConfirm={handleReset}
+              onCancel={() => setShowResetConfirm(false)}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+    </BrandBackground>
   );
 }

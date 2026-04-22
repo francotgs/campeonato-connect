@@ -2,49 +2,65 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Variables de tema (shadcn/ui — base "slate"). Se usan por componentes
-   generados con `pnpm dlx shadcn@latest add <component>`. */
+/* ============================================================================
+ * Brand tokens — Campeonato MundIAl 4Match
+ * ============================================================================
+ * Stadium-night palette: deep blue-black with emerald primary and gold accent.
+ * Usage via Tailwind arbitrary values (e.g. `bg-[var(--bg-base)]`) o via
+ * clases helpers definidas en `@layer utilities` al final del archivo.
+ */
 :root {
+  /* Surfaces */
+  --bg-deep: #05070f;
+  --bg-base: #0b1020;
+  --bg-elevated: #121829;
+  --bg-card: #1a2236;
+  --bg-card-hover: #1f2a42;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-emphasis: rgba(255, 255, 255, 0.18);
+
+  /* Brand accents */
+  --brand-primary: #10b981; /* emerald-500 */
+  --brand-primary-soft: #34d399; /* emerald-400 */
+  --brand-primary-bg: rgba(16, 185, 129, 0.12);
+  --brand-accent: #fbbf24; /* amber-400 → gold */
+  --brand-accent-soft: #fcd34d;
+  --brand-accent-bg: rgba(251, 191, 36, 0.12);
+  --brand-live: #22c55e; /* green-500 */
+  --brand-danger: #ef4444; /* red-500 */
+  --brand-warn: #f59e0b; /* amber-500 */
+
+  /* Shadow / glow */
+  --glow-primary: 0 0 32px rgba(16, 185, 129, 0.25);
+  --glow-accent: 0 0 32px rgba(251, 191, 36, 0.25);
+
+  /* shadcn/ui base tokens — usados por componentes generados */
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
+  --background: var(--bg-base);
+  --foreground: #e6edf3;
+  --card: var(--bg-card);
+  --card-foreground: #e6edf3;
+  --popover: var(--bg-elevated);
+  --popover-foreground: #e6edf3;
+  --primary: var(--brand-primary);
+  --primary-foreground: #0b1020;
+  --secondary: var(--bg-card);
+  --secondary-foreground: #e6edf3;
+  --muted: var(--bg-card);
+  --muted-foreground: rgba(230, 237, 243, 0.6);
+  --accent: var(--bg-card-hover);
+  --accent-foreground: #e6edf3;
+  --destructive: var(--brand-danger);
+  --border: var(--border-default);
+  --input: var(--bg-card);
+  --ring: var(--brand-primary);
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
+  /* No overrides — los valores de :root ya son dark */
 }
 
 @theme inline {
@@ -78,8 +94,89 @@
   }
   html,
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--bg-deep);
+    color: var(--foreground);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Better focus ring for keyboard users */
+  *:focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Shared background: stadium-night gradient used by full-page screens. */
+  .bg-surface {
+    background-color: var(--bg-base);
+    background-image: radial-gradient(
+        ellipse 80% 60% at 50% 0%,
+        rgba(16, 185, 129, 0.08) 0%,
+        transparent 60%
+      ), radial-gradient(ellipse 60% 40% at 50% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+  }
+
+  .bg-surface-elevated {
+    background-color: var(--bg-elevated);
+  }
+
+  .bg-surface-card {
+    background-color: var(--bg-card);
+  }
+
+  .border-subtle {
+    border-color: var(--border-subtle);
+  }
+
+  .border-default {
+    border-color: var(--border-default);
+  }
+
+  .border-emphasis {
+    border-color: var(--border-emphasis);
+  }
+
+  /* Glows */
+  .glow-primary {
+    box-shadow: var(--glow-primary);
+  }
+
+  .glow-accent {
+    box-shadow: var(--glow-accent);
+  }
+
+  /* Text brand */
+  .text-brand {
+    color: var(--brand-primary-soft);
+  }
+
+  .text-accent-gold {
+    color: var(--brand-accent);
+  }
+}
+
+/* ============================================================================
+ * Animations shared across the app
+ * ============================================================================ */
+@keyframes field-pan {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-40px, -20px, 0);
+  }
+}
+
+@keyframes pulse-ring {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.08;
+    transform: scale(1.08);
   }
 }

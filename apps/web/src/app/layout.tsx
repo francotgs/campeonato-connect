@@ -4,6 +4,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Campeonato MundIAl 4Match",
   description: "Torneo relámpago de cartas de fútbol en vivo — Evento Connect de Grupo CEDI.",
+  applicationName: "Campeonato MundIAl 4Match",
+  openGraph: {
+    title: "Campeonato MundIAl 4Match",
+    description: "Torneo relámpago de cartas de fútbol en vivo.",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
@@ -11,7 +17,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0d1117",
+  themeColor: "#0b1020",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -21,9 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className="dark" suppressHydrationWarning>
-      <body className="min-h-screen antialiased bg-[#0d1117] text-white overflow-x-hidden">
-        {children}
-      </body>
+      <body className="min-h-screen antialiased overflow-x-hidden">{children}</body>
     </html>
   );
 }

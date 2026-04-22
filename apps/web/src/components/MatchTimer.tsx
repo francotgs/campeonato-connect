@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useCountdown } from "@/hooks/useCountdown";
+import { cn } from "@/lib/utils";
 
 interface MatchTimerProps {
   endsAt: number;
@@ -26,7 +26,14 @@ export function MatchTimer({ endsAt, totalMs = 120_000, className }: MatchTimerP
 
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>
-      <svg width={SIZE} height={SIZE} className="-rotate-90">
+      <svg
+        width={SIZE}
+        height={SIZE}
+        className="-rotate-90"
+        role="img"
+        aria-label={`Tiempo restante: ${label}`}
+      >
+        <title>{`Tiempo restante: ${label}`}</title>
         {/* Track */}
         <circle
           cx={SIZE / 2}

@@ -1,10 +1,11 @@
 "use client";
 
 import type {
+  AttrKey,
   Card,
   MatchEndedEvent,
-  MatchStartingEvent,
   MatchStartedEvent,
+  MatchStartingEvent,
   PlayerEliminatedEvent,
   PlayerWaitingNextEvent,
   RoundAttributeChosenEvent,
@@ -12,7 +13,6 @@ import type {
   RoundStartedEvent,
   TournamentFinishedEvent,
   TournamentStateEvent,
-  AttrKey,
 } from "@campeonato/domain";
 import { create } from "zustand";
 
@@ -21,17 +21,17 @@ import { create } from "zustand";
 // ============================================================================
 
 export type GamePhase =
-  | "idle"            // sin conexión / sin token
-  | "lobby"           // inscripto, esperando inicio de torneo
-  | "previewing"      // recibió match:starting, ve su mazo antes de la partida
-  | "waiting_start"   // cuenta regresiva hasta que empieza la partida
-  | "in_match"        // partida activa
-  | "round_result"    // mostrando resultado de ronda (2-3 s)
-  | "tiebreaker"      // se activó tiebreaker
-  | "match_ended"     // partida terminada, mostrando pantalla de resultado
-  | "waiting_next"    // ganó, esperando próximo rival
-  | "eliminated"      // eliminado del torneo
-  | "champion";       // campeón del torneo
+  | "idle" // sin conexión / sin token
+  | "lobby" // inscripto, esperando inicio de torneo
+  | "previewing" // recibió match:starting, ve su mazo antes de la partida
+  | "waiting_start" // cuenta regresiva hasta que empieza la partida
+  | "in_match" // partida activa
+  | "round_result" // mostrando resultado de ronda (2-3 s)
+  | "tiebreaker" // se activó tiebreaker
+  | "match_ended" // partida terminada, mostrando pantalla de resultado
+  | "waiting_next" // ganó, esperando próximo rival
+  | "eliminated" // eliminado del torneo
+  | "champion"; // campeón del torneo
 
 // ============================================================================
 // Tipo del store
@@ -52,21 +52,21 @@ export interface GameStore {
   matchId: string | null;
   mySlot: 0 | 1 | null;
   opponent: MatchStartingEvent["opponent"] | null;
-  myCards: Card[];         // mazo completo (preview)
+  myCards: Card[]; // mazo completo (preview)
   startingChooser: 0 | 1 | null;
   startsAt: number | null;
 
   // ── Partida activa ────────────────────────────────────────────
   endsAt: number | null;
   roundNumber: number;
-  chooser: 0 | 1 | null;       // slot que elige en esta ronda
+  chooser: 0 | 1 | null; // slot que elige en esta ronda
   myCurrentCard: Card | null;
   opponentCardBack: { gradient: [string, string] } | null;
   deadlineAt: number | null;
   myDeckSize: number;
   opponentDeckSize: number;
-  chosenAttribute: AttrKey | null;  // atributo que el chooser ya eligió
-  pickSent: boolean;               // para evitar doble envío
+  chosenAttribute: AttrKey | null; // atributo que el chooser ya eligió
+  pickSent: boolean; // para evitar doble envío
 
   // ── Resultado de ronda ────────────────────────────────────────
   lastResult: RoundResultEvent | null;
@@ -176,7 +176,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       localStorage.removeItem("4match:playerName");
     }
     set({
-      playerId: null, token: null, tournamentId: null, playerName: null,
+      playerId: null,
+      token: null,
+      tournamentId: null,
+      playerName: null,
       phase: "idle",
     });
   },

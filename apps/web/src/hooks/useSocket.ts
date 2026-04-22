@@ -1,9 +1,9 @@
 "use client";
 
-import { SERVER_EVENTS } from "@campeonato/domain";
-import { useEffect, useRef } from "react";
 import { getSocket } from "@/lib/socket";
 import { useGameStore } from "@/lib/store";
+import { SERVER_EVENTS } from "@campeonato/domain";
+import { useEffect, useRef } from "react";
 
 /**
  * Monta el cliente Socket.IO y registra todos los handlers de eventos del
@@ -54,9 +54,7 @@ export function useSocket() {
       });
 
       socket.on(SERVER_EVENTS.ROUND_ATTRIBUTE_CHOSEN, (data) => {
-        store.onRoundAttributeChosen(
-          data as Parameters<typeof store.onRoundAttributeChosen>[0],
-        );
+        store.onRoundAttributeChosen(data as Parameters<typeof store.onRoundAttributeChosen>[0]);
       });
 
       socket.on(SERVER_EVENTS.ROUND_RESULT, (data) => {
@@ -72,21 +70,15 @@ export function useSocket() {
       });
 
       socket.on(SERVER_EVENTS.PLAYER_WAITING_NEXT, (data) => {
-        store.onPlayerWaitingNext(
-          data as Parameters<typeof store.onPlayerWaitingNext>[0],
-        );
+        store.onPlayerWaitingNext(data as Parameters<typeof store.onPlayerWaitingNext>[0]);
       });
 
       socket.on(SERVER_EVENTS.PLAYER_ELIMINATED, (data) => {
-        store.onPlayerEliminated(
-          data as Parameters<typeof store.onPlayerEliminated>[0],
-        );
+        store.onPlayerEliminated(data as Parameters<typeof store.onPlayerEliminated>[0]);
       });
 
       socket.on(SERVER_EVENTS.TOURNAMENT_FINISHED, (data) => {
-        store.onTournamentFinished(
-          data as Parameters<typeof store.onTournamentFinished>[0],
-        );
+        store.onTournamentFinished(data as Parameters<typeof store.onTournamentFinished>[0]);
       });
 
       socket.on(SERVER_EVENTS.ERROR, (data) => {
@@ -99,7 +91,7 @@ export function useSocket() {
       // No desconectamos aquí para mantener la sesión durante la vida de la app.
       // El socket se destruye solo si el usuario limpia auth o cierra la página.
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return getSocket();

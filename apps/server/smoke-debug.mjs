@@ -1,7 +1,7 @@
 /**
  * Debug rápido: registra un jugador y escucha TODOS los eventos que llegan.
  */
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { io } from "socket.io-client";
 
 const BASE = "http://localhost:4000";

@@ -1,7 +1,7 @@
 "use client";
 
-import type { AttrKey, Card } from "@campeonato/domain";
 import { cn } from "@/lib/utils";
+import type { AttrKey, Card } from "@campeonato/domain";
 
 // Orden y etiquetas de los 8 atributos
 const ATTRIBUTES: { key: AttrKey; label: string }[] = [
@@ -66,9 +66,7 @@ export function PlayerCard({
           <span className="text-white/70 text-[10px] font-semibold uppercase leading-none">
             OVR
           </span>
-          <span className="text-white text-2xl font-black leading-tight">
-            {card.overall}
-          </span>
+          <span className="text-white text-2xl font-black leading-tight">{card.overall}</span>
         </div>
 
         {/* Posición */}
@@ -96,7 +94,7 @@ export function PlayerCard({
       </div>
 
       {/* Atributos */}
-      <div className="bg-[#0d1117] divide-y divide-white/5">
+      <div className="bg-[var(--bg-elevated)] divide-y divide-white/5">
         {ATTRIBUTES.map(({ key, label }) => {
           const value = card.attributes[key];
           const isSelected = selectedAttribute === key;
@@ -135,11 +133,7 @@ export function PlayerCard({
               <span
                 className={cn(
                   "text-lg font-black tabular-nums",
-                  isSelected
-                    ? "text-emerald-300"
-                    : isHighlighted
-                      ? "text-amber-300"
-                      : "text-white",
+                  isSelected ? "text-emerald-300" : isHighlighted ? "text-amber-300" : "text-white",
                 )}
               >
                 {value}

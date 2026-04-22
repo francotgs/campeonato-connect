@@ -55,13 +55,25 @@ pnpm dev
 | `pnpm format`      | Formateo con Biome                                             |
 | `pnpm test`        | Tests del dominio (Vitest)                                     |
 
+## Deploy
+
+La app se despliega en **Railway** con 3 servicios (Redis + server + web) y redeploy
+automático por cada `git push` a `main`. Guía paso a paso para alguien que nunca
+usó Railway: [`docs/DEPLOY_RAILWAY.md`](./docs/DEPLOY_RAILWAY.md).
+
+Archivos clave del deploy:
+
+- `apps/server/Dockerfile` — imagen multi-stage del NestJS
+- `apps/web/Dockerfile` — imagen multi-stage del Next.js (output standalone)
+- `apps/server/railway.json` / `apps/web/railway.json` — config de builder y healthcheck
+
 ## Estado
 
 - [x] **Fase 0** — Setup del monorepo (scaffolding, health gateway, landing vacía).
-- [ ] Fase 1 — Dominio puro y catálogo.
-- [ ] Fase 2 — Loop de partida vía Socket.IO.
-- [ ] Fase 3 — Motor de torneo.
-- [ ] Fase 4 — UI del jugador.
-- [ ] Fase 5 — UI del bracket proyectable.
-- [ ] Fase 6 — Panel admin.
-- [ ] Fase 7 — Pulido y deploy.
+- [x] **Fase 1** — Dominio puro y catálogo.
+- [x] **Fase 2** — Loop de partida vía Socket.IO.
+- [x] **Fase 3** — Motor de torneo.
+- [x] **Fase 4** — UI del jugador.
+- [x] **Fase 5** — UI del bracket proyectable.
+- [x] **Fase 6** — Panel admin.
+- [x] **Fase 7** — Sistema de diseño unificado + deploy a Railway.

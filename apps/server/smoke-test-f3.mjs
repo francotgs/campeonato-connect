@@ -15,8 +15,8 @@
  * Requiere: server corriendo en PORT=4000 con Redis.
  */
 
+import { randomUUID } from "node:crypto";
 import { io } from "socket.io-client";
-import { randomUUID } from "crypto";
 
 const URL = "http://localhost:4000";
 const TID = process.env.BOOTSTRAP_TOURNAMENT_ID ?? "t-default";
@@ -127,10 +127,15 @@ async function main() {
   console.log("\n[1] admin:start_tournament");
   let startAck;
   try {
-    startAck = await emitAck(admin, "admin:start_tournament", {
-      msgId: randomUUID(),
-      tournamentId: TID,
-    }, 15_000);
+    startAck = await emitAck(
+      admin,
+      "admin:start_tournament",
+      {
+        msgId: randomUUID(),
+        tournamentId: TID,
+      },
+      15_000,
+    );
   } catch (e) {
     console.error("  ✗ start_tournament timeout:", e.message);
     process.exit(1);
@@ -143,7 +148,9 @@ async function main() {
   // ──────────────────────────────────────────────────────────────
   console.log("\n[2] bracket:updated (ronda 0)");
   let bracketEvt;
-  try { bracketEvt = await bracketUpdatedP; } catch (e) {
+  try {
+    bracketEvt = await bracketUpdatedP;
+  } catch (e) {
     console.error("  ✗ bracket:updated timeout:", e.message);
     process.exit(1);
   }
@@ -158,8 +165,11 @@ async function main() {
   // 5. match:starting para ambos jugadores
   // ──────────────────────────────────────────────────────────────
   console.log("\n[3] match:starting para A y B");
-  let msA, msB;
-  try { [msA, msB] = await Promise.all([matchStartingAP, matchStartingBP]); } catch (e) {
+  let msA;
+  let msB;
+  try {
+    [msA, msB] = await Promise.all([matchStartingAP, matchStartingBP]);
+  } catch (e) {
     console.error("  ✗ match:starting timeout:", e.message);
     process.exit(1);
   }
@@ -178,13 +188,19 @@ async function main() {
   const tournamentFinishedP = waitFor(sockA, "tournament:finished", 15_000);
 
   // Esperar round:started para tener matchId confirmado antes del leave
-  try { await waitFor(sockA, "round:started", 10_000); } catch (_) { /* continua si no llega */ }
+  try {
+    await waitFor(sockA, "round:started", 10_000);
+  } catch (_) {
+    /* continua si no llega */
+  }
 
   const leaveAck = await emitAck(sockA, "match:leave", { msgId: randomUUID(), matchId }, 10_000);
   assert("match:leave ack ok", leaveAck?.ok === true);
 
   let matchEndedEvt;
-  try { matchEndedEvt = await matchEndedP; } catch (e) {
+  try {
+    matchEndedEvt = await matchEndedP;
+  } catch (e) {
     console.error("  ✗ match:ended timeout:", e.message);
     process.exit(1);
   }
@@ -198,7 +214,9 @@ async function main() {
   // ──────────────────────────────────────────────────────────────
   console.log("\n[5] bracket:updated tras fin de partida");
   let bracketEvt2;
-  try { bracketEvt2 = await bracketUpdated2P; } catch (e) {
+  try {
+    bracketEvt2 = await bracketUpdated2P;
+  } catch (e) {
     console.error("  ✗ bracket:updated (2) timeout:", e.message);
     process.exit(1);
   }
@@ -211,7 +229,9 @@ async function main() {
   // ──────────────────────────────────────────────────────────────
   console.log("\n[6] tournament:finished");
   let finishedEvt;
-  try { finishedEvt = await tournamentFinishedP; } catch (e) {
+  try {
+    finishedEvt = await tournamentFinishedP;
+  } catch (e) {
     console.error("  ✗ tournament:finished timeout:", e.message);
     process.exit(1);
   }
@@ -225,7 +245,10 @@ async function main() {
   const resetAck = await emitAck(admin, "admin:reset", { msgId: randomUUID(), tournamentId: TID });
   assert("admin:reset ok", resetAck?.ok === true);
 
-  const openAck = await emitAck(admin, "admin:open_registration", { msgId: randomUUID(), tournamentId: TID });
+  const openAck = await emitAck(admin, "admin:open_registration", {
+    msgId: randomUUID(),
+    tournamentId: TID,
+  });
   assert("admin:open_registration ok", openAck?.ok === true);
 
   // ──────────────────────────────────────────────────────────────

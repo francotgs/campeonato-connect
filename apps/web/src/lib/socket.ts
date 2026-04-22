@@ -1,6 +1,6 @@
 "use client";
 
-import { io, type Socket } from "socket.io-client";
+import { type Socket, io } from "socket.io-client";
 
 let _socket: Socket | null = null;
 
@@ -13,8 +13,7 @@ let _socket: Socket | null = null;
 export function getSocket(): Socket {
   if (!_socket) {
     const url = process.env.NEXT_PUBLIC_SOCKET_URL ?? "http://localhost:4000";
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("4match:token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("4match:token") : null;
 
     _socket = io(url, {
       auth: { mode: "player", token: token ?? null },

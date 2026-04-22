@@ -1,15 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { BrandBackground, Panel, StatusPill } from "@/components/brand";
+import { Button } from "@/components/ui/button";
+import { getSocket } from "@/lib/socket";
+import { useGameStore } from "@/lib/store";
 import type { AttrKey } from "@campeonato/domain";
 import { CLIENT_EVENTS } from "@campeonato/domain";
-import { useGameStore } from "@/lib/store";
-import { getSocket } from "@/lib/socket";
-import { PlayerCard, CardBack } from "./PlayerCard";
-import { RoundResult } from "./RoundResult";
+import { AnimatePresence, motion } from "framer-motion";
+import { LogOut, Swords } from "lucide-react";
+import { useCallback, useEffect, useRef } from "react";
 import { MatchTimer } from "./MatchTimer";
-import { Button } from "@/components/ui/button";
+import { CardBack, PlayerCard } from "./PlayerCard";
+import { RoundResult } from "./RoundResult";
 
 export function MatchView() {
   const store = useGameStore();
@@ -42,11 +44,10 @@ export function MatchView() {
     (attr: AttrKey) => {
       if (!matchId || !roundNumber || pickSent) return;
       store.markPickSent();
-
       socket.emit(
         CLIENT_EVENTS.MATCH_PICK_ATTRIBUTE,
         { msgId: crypto.randomUUID(), matchId, roundNumber, attribute: attr },
-        () => { /* ack received */ },
+        () => {},
       );
     },
     [matchId, roundNumber, pickSent, socket, store],
@@ -55,173 +56,193 @@ export function MatchView() {
   const handleAbandon = useCallback(() => {
     if (!matchId || abandonSentRef.current) return;
     abandonSentRef.current = true;
-    socket.emit(
-      CLIENT_EVENTS.MATCH_LEAVE,
-      { msgId: crypto.randomUUID(), matchId },
-      () => { /* ack received */ },
-    );
+    socket.emit(CLIENT_EVENTS.MATCH_LEAVE, { msgId: crypto.randomUUID(), matchId }, () => {});
   }, [matchId, socket]);
 
-  // Cuando el estado de la partida es round_result, volvemos a in_match
-  // automáticamente cuando llega el próximo round:started (manejado en store).
-
-  // Reset de abandonSentRef cuando termina la partida
   useEffect(() => {
-    if (phase === "match_ended") {
-      abandonSentRef.current = false;
-    }
+    if (phase === "match_ended") abandonSentRef.current = false;
   }, [phase]);
 
-  // Pantalla de partida terminada
   if (phase === "match_ended" && matchResult) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0d1117] text-white px-6 text-center gap-6">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 250 }}
-          className="space-y-3"
-        >
-          <p className="text-white/50 text-xs uppercase tracking-widest">Partida terminada</p>
-          <h2
-            className={`text-5xl font-black ${isWinner ? "text-emerald-400" : "text-red-400"}`}
+      <BrandBackground variant={isWinner ? "celebrate" : "subtle"}>
+        <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center gap-6">
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }}
+            className="space-y-3"
           >
-            {isWinner ? "¡GANASTE!" : "PERDISTE"}
-          </h2>
-          <p className="text-white/60 text-sm">
-            Razón: {matchResult.reason} · Rondas: {matchResult.stats.roundsPlayed}
-          </p>
-        </motion.div>
-        <div className="flex gap-8 text-center">
-          <div>
-            <p className="text-white/40 text-[10px] uppercase tracking-widest">Tu mazo</p>
-            <p className="text-2xl font-bold">{matchResult.stats.finalDeckSizes[0]}</p>
-          </div>
-          <div>
-            <p className="text-white/40 text-[10px] uppercase tracking-widest">Rival</p>
-            <p className="text-2xl font-bold">{matchResult.stats.finalDeckSizes[1]}</p>
-          </div>
+            <p className="text-white/50 text-[10px] uppercase tracking-[0.3em] font-bold">
+              Partida terminada
+            </p>
+            <h2
+              className={`text-6xl font-black drop-shadow-[0_0_24px_currentColor] ${isWinner ? "text-emerald-400" : "text-red-400"}`}
+            >
+              {isWinner ? "¡GANASTE!" : "PERDISTE"}
+            </h2>
+            <p className="text-white/60 text-sm">
+              Motivo: <span className="text-white font-medium">{matchResult.reason}</span> · Rondas
+              jugadas:{" "}
+              <span className="text-white font-medium">{matchResult.stats.roundsPlayed}</span>
+            </p>
+          </motion.div>
+
+          <Panel className="px-6 py-4 flex gap-10 text-center">
+            <div>
+              <p className="text-white/40 text-[10px] uppercase tracking-widest">Tu mazo</p>
+              <p className="text-2xl font-black tabular-nums">
+                {matchResult.stats.finalDeckSizes[0]}
+              </p>
+            </div>
+            <div className="w-px bg-white/10" />
+            <div>
+              <p className="text-white/40 text-[10px] uppercase tracking-widest">Rival</p>
+              <p className="text-2xl font-black tabular-nums">
+                {matchResult.stats.finalDeckSizes[1]}
+              </p>
+            </div>
+          </Panel>
         </div>
-      </div>
+      </BrandBackground>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0d1117] text-white select-none">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <div className="text-left">
-          <p className="text-white/40 text-[10px] uppercase tracking-widest">Rival</p>
-          <p className="text-white font-bold text-sm truncate max-w-[140px]">
-            {opponent?.name ?? "—"}
-          </p>
+    <BrandBackground variant="subtle">
+      <div className="flex flex-col min-h-screen select-none">
+        {/* Header con info del rival, timer, ronda */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-subtle bg-[rgba(11,16,32,0.65)] backdrop-blur">
+          <div className="text-left min-w-0">
+            <p className="text-white/40 text-[10px] uppercase tracking-widest">Rival</p>
+            <p className="text-white font-bold text-sm truncate max-w-[140px]">
+              {opponent?.name ?? "—"}
+            </p>
+          </div>
+
+          {endsAt && <MatchTimer endsAt={endsAt} totalMs={120_000} />}
+
+          <div className="text-right">
+            <p className="text-white/40 text-[10px] uppercase tracking-widest">Ronda</p>
+            <p className="text-white font-bold text-sm tabular-nums">{roundNumber}</p>
+          </div>
         </div>
 
-        {endsAt && (
-          <MatchTimer endsAt={endsAt} totalMs={120_000} />
-        )}
-
-        <div className="text-right">
-          <p className="text-white/40 text-[10px] uppercase tracking-widest">Ronda</p>
-          <p className="text-white font-bold text-sm">{roundNumber}</p>
+        {/* Contadores de mazo */}
+        <div className="flex items-center justify-between px-6 py-3">
+          <div className="inline-flex items-center gap-2 text-xs text-white/60">
+            <div className="size-2 rounded-full bg-emerald-400" />
+            Tu mazo <span className="text-white font-bold tabular-nums ml-0.5">{myDeckSize}</span>
+          </div>
+          <Swords className="size-3.5 text-white/30" />
+          <div className="inline-flex items-center gap-2 text-xs text-white/60">
+            Rival{" "}
+            <span className="text-white font-bold tabular-nums ml-0.5">{opponentDeckSize}</span>
+            <div className="size-2 rounded-full bg-red-400" />
+          </div>
         </div>
-      </div>
 
-      {/* Contador de mazos */}
-      <div className="flex justify-between px-6 pb-3">
-        <span className="text-xs text-white/50">
-          Tu mazo:{" "}
-          <span className="text-white font-bold">{myDeckSize}</span>
-        </span>
-        <span className="text-xs text-white/50">
-          Rival:{" "}
-          <span className="text-white font-bold">{opponentDeckSize}</span>
-        </span>
-      </div>
-
-      {/* Turno */}
-      <div className="text-center pb-2">
-        {isMyTurn ? (
+        {/* Turno */}
+        <div className="text-center pb-3 min-h-[32px]">
           <AnimatePresence mode="wait">
-            <motion.p
-              key="your-turn"
-              className="text-emerald-400 text-xs font-bold uppercase tracking-widest"
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              ¡Tu turno! Elige un atributo
-            </motion.p>
+            {isMyTurn ? (
+              <motion.div
+                key="your-turn"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
+                <StatusPill tone="primary" pulse>
+                  ¡Tu turno! Elegí un atributo
+                </StatusPill>
+              </motion.div>
+            ) : chosenAttribute ? (
+              <motion.div
+                key="resolving"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <StatusPill tone="warning">Rival eligió · Resolviendo…</StatusPill>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="waiting"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <StatusPill tone="muted">Esperando al rival…</StatusPill>
+              </motion.div>
+            )}
           </AnimatePresence>
-        ) : chosenAttribute ? (
-          <p className="text-amber-400 text-xs uppercase tracking-widest">
-            Rival eligió · Resolviendo…
-          </p>
-        ) : (
-          <p className="text-white/40 text-xs uppercase tracking-widest">
-            Esperando al rival…
-          </p>
-        )}
-      </div>
-
-      {/* Carta del rival (reverso) */}
-      <div className="px-6 mb-4">
-        {opponentCardBack ? (
-          <CardBack
-            gradient={opponentCardBack.gradient}
-            className="w-full max-w-sm mx-auto h-16"
-          />
-        ) : (
-          <div className="h-16 bg-white/5 rounded-xl mx-auto max-w-sm" />
-        )}
-      </div>
-
-      {/* Carta propia */}
-      <div className="flex-1 px-4 overflow-y-auto">
-        {myCurrentCard ? (
-          <PlayerCard
-            card={myCurrentCard}
-            interactive={isMyTurn && !pickSent}
-            selectedAttribute={pickSent ? (chosenAttribute ?? null) : null}
-            onPickAttribute={handlePickAttribute}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-40 text-white/30">
-            Cargando…
-          </div>
-        )}
-      </div>
-
-      {/* Botón abandonar */}
-      <div className="px-4 py-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full text-white/30 hover:text-red-400 hover:bg-red-950/30 text-xs"
-          onClick={handleAbandon}
-        >
-          Abandonar partida
-        </Button>
-      </div>
-
-      {/* Overlay resultado de ronda */}
-      {lastResult && myCurrentCard && (
-        <RoundResult
-          result={lastResult}
-          opponentCard={lastResult.revealedOpponentCard}
-          iWon={lastResult.winner === "you"}
-          visible={phase === "round_result"}
-        />
-      )}
-
-      {/* Timer de deadline */}
-      {deadlineAt && isMyTurn && !pickSent && (
-        <div className="fixed top-4 right-4 z-40">
-          <div className="bg-[#0d1117]/80 rounded-full p-1">
-            <MatchTimer endsAt={deadlineAt} totalMs={10_000} />
-          </div>
         </div>
-      )}
-    </div>
+
+        {/* Carta del rival (reverso) */}
+        <div className="px-6 mb-4">
+          {opponentCardBack ? (
+            <CardBack
+              gradient={opponentCardBack.gradient}
+              className="w-full max-w-sm mx-auto !aspect-auto h-16 ring-1 ring-white/10"
+            />
+          ) : (
+            <div className="h-16 bg-white/5 rounded-xl mx-auto max-w-sm" />
+          )}
+        </div>
+
+        {/* Carta propia */}
+        <div className="flex-1 px-4 overflow-y-auto pb-24">
+          {myCurrentCard ? (
+            <PlayerCard
+              card={myCurrentCard}
+              interactive={isMyTurn && !pickSent}
+              selectedAttribute={pickSent ? (chosenAttribute ?? null) : null}
+              onPickAttribute={handlePickAttribute}
+              className="mx-auto"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-40 text-white/30">
+              Cargando carta…
+            </div>
+          )}
+        </div>
+
+        {/* Botón abandonar (sticky bottom) */}
+        <div className="fixed bottom-0 left-0 right-0 px-4 py-3 bg-gradient-to-t from-[var(--bg-deep)] via-[var(--bg-deep)]/85 to-transparent">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-white/30 hover:text-red-400 hover:bg-red-950/30 text-xs gap-1.5"
+            onClick={handleAbandon}
+          >
+            <LogOut className="size-3" />
+            Abandonar partida
+          </Button>
+        </div>
+
+        {/* Overlay resultado de ronda */}
+        {lastResult && myCurrentCard && (
+          <RoundResult
+            result={lastResult}
+            opponentCard={lastResult.revealedOpponentCard}
+            iWon={lastResult.winner === "you"}
+            visible={phase === "round_result"}
+          />
+        )}
+
+        {/* Timer de deadline (urgente) */}
+        {deadlineAt && isMyTurn && !pickSent && (
+          <motion.div
+            className="fixed top-24 right-4 z-40"
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="rounded-full bg-[rgba(11,16,32,0.85)] backdrop-blur border border-red-500/40 p-1 shadow-xl">
+              <MatchTimer endsAt={deadlineAt} totalMs={10_000} />
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </BrandBackground>
   );
 }
