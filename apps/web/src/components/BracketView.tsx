@@ -176,6 +176,7 @@ function BracketColumn({
   unit,
   matchH,
   colWidth,
+  isLastRound,
 }: {
   round: { index: number; matches: BracketMatch[] };
   roundLabel: string;
@@ -185,6 +186,7 @@ function BracketColumn({
   unit: number;
   matchH: number;
   colWidth: number;
+  isLastRound: boolean;
 }) {
   const totalHeight = (bracketSize / 2) * unit;
 
@@ -217,12 +219,26 @@ function BracketColumn({
             >
               <MatchCard match={match} players={players} isCurrentRound={isCurrentRound} />
 
-              <div className="absolute top-1/2 h-px bg-white/15" style={{ width: 8, right: -8 }} />
-              {mi % 2 === 0 && (
-                <div
-                  className="absolute bg-white/15"
-                  style={{ width: 1, top: "50%", right: -8, height: factor * unit }}
-                />
+              {/*
+                Conectores de bracket:
+                - Stub horizontal que apunta al match de la siguiente ronda.
+                - Línea vertical que une el par (arriba/abajo) para formar la llave `⌐`.
+                En la ronda final (1 solo match) no existe par ni siguiente ronda,
+                así que no se dibuja ningún conector (evita la línea "colgando").
+              */}
+              {!isLastRound && (
+                <>
+                  <div
+                    className="absolute top-1/2 h-px bg-white/15"
+                    style={{ width: 8, right: -8 }}
+                  />
+                  {mi % 2 === 0 && (
+                    <div
+                      className="absolute bg-white/15"
+                      style={{ width: 1, top: "50%", right: -8, height: factor * unit }}
+                    />
+                  )}
+                </>
               )}
             </motion.div>
           );
@@ -380,6 +396,7 @@ export function BracketView({ bracket, currentRound, players, finished, tourname
               unit={UNIT}
               matchH={MATCH_H}
               colWidth={COL_W}
+              isLastRound={round.index === bracket.rounds.length - 1}
             />
           ))}
 
