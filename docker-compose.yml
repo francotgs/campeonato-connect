@@ -1,0 +1,27 @@
+# ==============================================================================
+# docker-compose.yml  —  Desarrollo local
+#
+# Levanta únicamente Redis (con AOF activado), que es la única dependencia
+# externa que necesitan apps/server y apps/web para correr en modo dev.
+#
+# Uso:
+#   docker compose up -d          # arrancar Redis en segundo plano
+#   docker compose down -v        # detener y borrar datos
+# ==============================================================================
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:

@@ -1,0 +1,76 @@
+# ============================================================================
+# docker-compose.prod-local.yml
+# Simula localmente el setup que va a correr en Railway: Redis + server (NestJS)
+# + web (Next.js standalone) con las mismas imagenes Docker multi-stage.
+#
+# Uso:
+#   docker compose -f docker-compose.prod-local.yml up --build
+#
+# Para resetear todo (borrar Redis data incluida):
+#   docker compose -f docker-compose.prod-local.yml down -v
+# ============================================================================
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: local-prod-secret-cambiar-en-produccion-real-xxx
+      ADMIN_TOKEN: local-prod-admin
+      CORS_ORIGIN: http://localhost:3000
+      MATCH_DURATION_SECONDS: "120"
+      CARDS_PER_PLAYER: "15"
+      TURN_PICK_TIMEOUT_SECONDS: "10"
+      RECONNECT_GRACE_SECONDS: "30"
+      MATCH_STALL_TIMEOUT_SECONDS: "15"
+      BOOTSTRAP_TOURNAMENT_ID: t-default
+      BOOTSTRAP_TOURNAMENT_NAME: "Campeonato MundIAl 4Match"
+      BOOTSTRAP_CUPO_MAX: "256"
+      LOG_LEVEL: info
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # Estas se "queman" en el bundle de Next en build-time.
+        NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
+        NEXT_PUBLIC_TOURNAMENT_ID: t-default
+        NEXT_PUBLIC_DEFAULT_TID: t-default
+    depends_on:
+      - server
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
+      NEXT_PUBLIC_TOURNAMENT_ID: t-default
+      NEXT_PUBLIC_DEFAULT_TID: t-default
+    restart: unless-stopped
+
+volumes:
+  redis-data:

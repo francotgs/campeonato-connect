@@ -26,23 +26,35 @@ Reglas de dependencia entre paquetes y motivaciones completas en
 
 - Node.js **22 LTS**
 - pnpm **9+**
-- Redis 7+ (para fases ≥ 2 — dev: `docker run -d --name redis-local -p 6379:6379 redis:7 redis-server --appendonly yes`)
+- Docker (para correr Redis)
 
 ## Primeros pasos
 
 ```bash
-# 1. Instalar
+# 1. Instalar dependencias
 pnpm install
 
-# 2. Copiar variables de entorno (ver .env.example)
+# 2. Copiar variables de entorno
 cp .env.example apps/server/.env
 cp .env.example apps/web/.env.local
+# Editá apps/server/.env si querés cambiar JWT_SECRET o ADMIN_TOKEN
 
-# 3. Levantar ambos apps en paralelo
+# 3. Levantar Redis (única dependencia externa)
+docker compose up -d
+
+# 4. Levantar server + web en paralelo
 pnpm dev
 #   → web    http://localhost:3000
 #   → server http://localhost:4000  (healthcheck: GET /health)
+#   → admin  http://localhost:3000/admin/dev-admin-token
 ```
+
+> **Simular producción localmente** (mismo setup que Railway, con Docker):
+> ```bash
+> docker compose -f docker-compose.prod-local.yml up --build
+> # Resetear todo (incluyendo datos de Redis):
+> docker compose -f docker-compose.prod-local.yml down -v
+> ```
 
 ## Scripts principales
 
