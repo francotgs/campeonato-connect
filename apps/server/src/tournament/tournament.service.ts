@@ -21,7 +21,10 @@ export type PersistedTournament = {
   championId: string | null;
 };
 
-const TOURNAMENT_TTL_SECONDS = 4 * 60 * 60;
+// Un evento típico dura horas, no minutos. Usamos 7 días para que ninguna clave
+// expire mientras haya actividad. Igualmente, `ensureBootstrap` re-crea el torneo
+// si por algún motivo la clave se perdió (reinicio de Redis, TTL residual, etc.).
+const TOURNAMENT_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 @Injectable()
 export class TournamentService implements OnModuleInit {
@@ -36,14 +39,24 @@ export class TournamentService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    const tid = this.config.get("BOOTSTRAP_TOURNAMENT_ID");
-    const existing = await this.get(tid);
+    await this.ensureBootstrap();
+  }
+
+  /**
+   * Garantiza que exista el torneo canónico (el configurado en
+   * BOOTSTRAP_TOURNAMENT_ID). Se ejecuta al arrancar el server, pero también
+   * se invoca desde el controller y el gateway para recuperarse automática-
+   * mente si la clave de Redis se pierde (TTL residual, reinicio del plugin,
+   * etc.) mientras el proceso del server sigue vivo.
+   */
+  async ensureBootstrap(tid?: string): Promise<PersistedTournament> {
+    const targetTid = tid ?? this.config.get("BOOTSTRAP_TOURNAMENT_ID");
+    const existing = await this.get(targetTid);
     if (existing) {
-      this.logger.log(`Bootstrap tournament ${tid} already exists (status=${existing.status})`);
-      return;
+      return existing;
     }
     const tournament: PersistedTournament = {
-      id: tid,
+      id: targetTid,
       name: this.config.get("BOOTSTRAP_TOURNAMENT_NAME"),
       status: "registration_open",
       cupoMax: this.config.get("BOOTSTRAP_CUPO_MAX"),
@@ -54,8 +67,9 @@ export class TournamentService implements OnModuleInit {
       finishedAt: null,
       championId: null,
     };
-    await this.redis.setJson(RedisKeys.tournament(tid), tournament, TOURNAMENT_TTL_SECONDS);
-    this.logger.log(`Bootstrapped tournament ${tid} (${tournament.name})`);
+    await this.redis.setJson(RedisKeys.tournament(targetTid), tournament, TOURNAMENT_TTL_SECONDS);
+    this.logger.log(`Bootstrapped tournament ${targetTid} (${tournament.name})`);
+    return tournament;
   }
 
   async get(tid: string): Promise<PersistedTournament | null> {

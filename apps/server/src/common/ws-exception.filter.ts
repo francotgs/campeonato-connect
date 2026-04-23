@@ -14,6 +14,13 @@ export class WsExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(WsExceptionFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost): void {
+    // El filtro está registrado global y puede recibir excepciones de HTTP.
+    // En ese caso, re-lanzamos para que Nest las maneje con su filter HTTP
+    // por defecto (traduce NotFoundException → 404, etc.).
+    if (host.getType() !== "ws") {
+      throw exception;
+    }
+
     const client = host.switchToWs().getClient<Socket>();
     const data = host.switchToWs().getData<{ msgId?: string } | undefined>();
 

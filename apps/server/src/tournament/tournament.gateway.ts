@@ -258,7 +258,16 @@ export class TournamentGateway implements OnGatewayInit, OnGatewayConnection, On
   }
 
   private async buildSnapshot(tid: string, playerId?: string): Promise<TournamentStateEvent> {
-    const tournament = await this.tournaments.mustGet(tid);
+    // Auto-bootstrap del torneo canónico si por algún motivo la clave se perdió
+    // (por ejemplo, Redis reinició o un TTL antiguo expiró). Para torneos no
+    // canónicos conservamos el comportamiento estricto de `mustGet`.
+    let tournament = await this.tournaments.get(tid);
+    if (!tournament && tid === this.config.get("BOOTSTRAP_TOURNAMENT_ID")) {
+      tournament = await this.tournaments.ensureBootstrap(tid);
+    }
+    if (!tournament) {
+      tournament = await this.tournaments.mustGet(tid);
+    }
     const playersCount = await this.tournaments.countHumans(tid);
     const snapshot: TournamentStateEvent = {
       tournament: await this.tournaments.toSummary(tournament),

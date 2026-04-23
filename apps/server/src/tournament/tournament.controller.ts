@@ -1,4 +1,5 @@
 import { Controller, Get, NotFoundException, Param } from "@nestjs/common";
+import { ConfigService } from "../config/config.service";
 import { RedisKeys } from "../redis/redis-keys";
 import { RedisService } from "../redis/redis.service";
 import { PlayerService } from "./player.service";
@@ -20,7 +21,22 @@ export class TournamentController {
     private readonly tournaments: TournamentService,
     private readonly players: PlayerService,
     private readonly redis: RedisService,
+    private readonly config: ConfigService,
   ) {}
+
+  /**
+   * Si el tid pedido es el torneo canónico (BOOTSTRAP_TOURNAMENT_ID) y no
+   * existe en Redis (expiración, reinicio, etc.), lo re-bootstrapeamos para
+   * que la UI pública no quede pegada en 404.
+   */
+  private async resolveOrBootstrap(tid: string) {
+    const existing = await this.tournaments.get(tid);
+    if (existing) return existing;
+    if (tid === this.config.get("BOOTSTRAP_TOURNAMENT_ID")) {
+      return this.tournaments.ensureBootstrap(tid);
+    }
+    throw new NotFoundException(`Tournament ${tid} not found`);
+  }
 
   /**
    * GET /api/bracket/:tid/players
@@ -31,8 +47,7 @@ export class TournamentController {
   async getPlayers(
     @Param("tid") tid: string,
   ): Promise<{ players: Record<string, PlayerRosterEntry> }> {
-    const tournament = await this.tournaments.get(tid);
-    if (!tournament) throw new NotFoundException(`Tournament ${tid} not found`);
+    await this.resolveOrBootstrap(tid);
 
     const playerIds = await this.redis.client.smembers(RedisKeys.tournamentPlayers(tid));
 
@@ -57,9 +72,7 @@ export class TournamentController {
    */
   @Get(":tid/bracket")
   async getBracket(@Param("tid") tid: string) {
-    const tournament = await this.tournaments.get(tid);
-    if (!tournament) throw new NotFoundException(`Tournament ${tid} not found`);
-
+    const tournament = await this.resolveOrBootstrap(tid);
     const bracket = await this.redis.getJson(RedisKeys.tournamentBracket(tid));
     return { bracket: bracket ?? null, status: tournament.status };
   }
