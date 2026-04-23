@@ -41,6 +41,17 @@ export function useSocket() {
         store.onTournamentState(data as Parameters<typeof store.onTournamentState>[0]);
       });
 
+      socket.on(SERVER_EVENTS.TOURNAMENT_RESET, () => {
+        // El admin reseteó el torneo: nuestra sesión ya no es válida en el server.
+        // Limpiamos auth local y redirigimos al join del mismo torneo.
+        const tid = localStorage.getItem("4match:tournamentId") ?? "t-default";
+        store.clearAuth();
+        if (typeof window !== "undefined") {
+          // Usamos replace para no mantener la ruta /play en el historial.
+          window.location.replace(`/join/${tid}`);
+        }
+      });
+
       socket.on(SERVER_EVENTS.MATCH_STARTING, (data) => {
         store.onMatchStarting(data as Parameters<typeof store.onMatchStarting>[0]);
       });

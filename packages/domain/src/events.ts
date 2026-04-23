@@ -36,6 +36,7 @@ export type ClientEventName = (typeof CLIENT_EVENTS)[keyof typeof CLIENT_EVENTS]
 
 export const SERVER_EVENTS = {
   TOURNAMENT_STATE: "tournament:state",
+  TOURNAMENT_RESET: "tournament:reset",
   BRACKET_UPDATED: "bracket:updated",
   MATCH_STARTING: "match:starting",
   MATCH_STARTED: "match:started",
@@ -184,6 +185,11 @@ export const tournamentStateEventSchema = z.object({
 });
 export type TournamentStateEvent = z.infer<typeof tournamentStateEventSchema>;
 
+export const tournamentResetEventSchema = z.object({
+  tournamentId: tournamentIdSchema,
+});
+export type TournamentResetEvent = z.infer<typeof tournamentResetEventSchema>;
+
 export const bracketUpdatedEventSchema = z.object({
   bracket: bracketSchema,
   round: z.number().int().nonnegative(),
@@ -304,6 +310,7 @@ export const CLIENT_EVENT_SCHEMAS = {
 
 export const SERVER_EVENT_SCHEMAS = {
   [SERVER_EVENTS.TOURNAMENT_STATE]: tournamentStateEventSchema,
+  [SERVER_EVENTS.TOURNAMENT_RESET]: tournamentResetEventSchema,
   [SERVER_EVENTS.BRACKET_UPDATED]: bracketUpdatedEventSchema,
   [SERVER_EVENTS.MATCH_STARTING]: matchStartingEventSchema,
   [SERVER_EVENTS.MATCH_STARTED]: matchStartedEventSchema,

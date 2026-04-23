@@ -81,6 +81,16 @@ function BracketViewer({ tid }: { tid: string }) {
       setTournamentName(payload.tournament?.name ?? "Campeonato MundIAl 4Match");
     });
 
+    socket.on(SERVER_EVENTS.TOURNAMENT_RESET, () => {
+      // El admin reseteó el torneo: limpiamos el bracket, el campeón y el
+      // roster. La UI vuelve a la pantalla de "Esperando que inicie el torneo"
+      // sin mostrar datos residuales.
+      setBracket(null);
+      setCurrentRound(0);
+      setFinished(null);
+      setPlayers({});
+    });
+
     socket.on(SERVER_EVENTS.BRACKET_UPDATED, (evt: BracketUpdatedEvent) => {
       setBracket(evt.bracket);
       setCurrentRound(evt.round);

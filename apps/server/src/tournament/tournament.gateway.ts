@@ -176,7 +176,17 @@ export class TournamentGateway implements OnGatewayInit, OnGatewayConnection, On
     }
     const token = payload.token;
     const decoded = this.session.verify(token);
-    const player = await this.players.mustGet(decoded.playerId);
+
+    // Si el player ya no existe (p.ej. el admin reseteó el torneo), devolvemos
+    // un ack estructurado `{ ok: false, code: UNAUTHORIZED }` en vez de tirar
+    // excepción. Así el cliente dispara su flujo de `clearAuth()` + redirect
+    // sin depender de un evento de error genérico.
+    const player = await this.players.get(decoded.playerId);
+    if (!player) {
+      this.logger.log(`player:reconnect pid=${decoded.playerId} rejected (not found)`);
+      return { ok: false, code: "UNAUTHORIZED", message: "player no longer exists" };
+    }
+
     await this.bindPlayerSocket(client, player.id, player.tournamentId, token);
     const tournament = await this.tournaments.mustGet(player.tournamentId);
     return {

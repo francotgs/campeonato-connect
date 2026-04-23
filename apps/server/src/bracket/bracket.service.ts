@@ -135,18 +135,29 @@ export class BracketService implements OnModuleInit {
 
   /**
    * Borra todo el estado del torneo y lo recrea en `registration_open`.
-   * Útil solo para testing pre-evento.
+   *
+   * Notifica a los clientes conectados (jugadores + pantallas bracket) mediante
+   * `tournament:reset` *antes* de borrar los datos, para que la UI pueda limpiar
+   * su sesión local (token/playerId) y volver a la pantalla de inscripción. Sin
+   * este aviso, los jugadores quedan con `localStorage` apuntando a un playerId
+   * que ya no existe en Redis y la UI muestra "Estás inscripto" fantasma.
    */
   async resetTournament(tid: string): Promise<void> {
     const tournament = await this.tournaments.mustGet(tid);
 
-    // Eliminar todos los jugadores
+    // 1. Avisar a todos los clientes conectados antes de borrar nada.
+    const io = this.ioRuntime.getServer();
+    io.to(`tournament:${tid}`).emit(SERVER_EVENTS.TOURNAMENT_RESET, { tournamentId: tid });
+    io.to(`bracket:${tid}`).emit(SERVER_EVENTS.TOURNAMENT_RESET, { tournamentId: tid });
+    io.to(`admin:${tid}`).emit(SERVER_EVENTS.TOURNAMENT_RESET, { tournamentId: tid });
+
+    // 2. Eliminar todos los jugadores.
     const allPlayerIds = await this.redis.client.smembers(RedisKeys.tournamentPlayers(tid));
     for (const pid of allPlayerIds) {
       await this.redis.client.del(RedisKeys.player(pid));
     }
 
-    // Limpiar sets de jugadores
+    // 3. Limpiar sets de jugadores y bracket.
     await this.redis.client.del(
       RedisKeys.tournamentPlayers(tid),
       RedisKeys.tournamentHumans(tid),
@@ -156,7 +167,7 @@ export class BracketService implements OnModuleInit {
       RedisKeys.tournamentCurrentRound(tid),
     );
 
-    // Resetear tournament
+    // 4. Resetear tournament a registration_open.
     await this.redis.setJson(
       RedisKeys.tournament(tid),
       {
