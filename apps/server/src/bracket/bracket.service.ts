@@ -47,6 +47,12 @@ export class BracketService implements OnModuleInit {
    * Cierra el registro, genera el bracket (rellenando con bots hasta la
    * siguiente potencia de 2), lanza las partidas de la ronda 0 y emite
    * `bracket:updated`.
+   *
+   * Reglas:
+   *  - Se requiere al menos 1 humano inscripto.
+   *  - El tamaño del bracket es `nextPowerOfTwo(humanos)`. Ej: 1→2, 3→4, 6→8.
+   *  - Los slots faltantes se completan automáticamente con bots, para que
+   *    todas las partidas puedan jugarse. Un humano solo juega vs bot.
    */
   async startTournament(tid: string): Promise<Bracket> {
     const tournament = await this.tournaments.mustGet(tid);
@@ -59,28 +65,13 @@ export class BracketService implements OnModuleInit {
       throw new GameError("INVALID_PAYLOAD", "no humans registered, cannot start");
     }
 
-    // Caso especial: un solo humano → campeón inmediato (§15.4)
-    if (humanIds.length === 1) {
-      const championId = humanIds[0];
-      if (!championId) throw new GameError("INTERNAL", "unexpected empty human id");
-      await this.tournaments.updateStatus(tid, "finished");
-      await this.tournaments.setChampion(tid, championId);
-      await this.players.updateStatus(championId, "champion");
-      const io = this.ioRuntime.getServer();
-      io.to(`tournament:${tid}`).emit(SERVER_EVENTS.TOURNAMENT_FINISHED, {
-        championId,
-        podium: {
-          champion: championId,
-          runnerUp: championId,
-          semifinalists: [championId, championId],
-        },
-      });
-      this.logger.log(`tournament ${tid} has only 1 human → instant champion=${championId}`);
-      const emptyBracket: Bracket = { size: 1, rounds: [] };
-      return emptyBracket;
-    }
+    // Limpiar bots huérfanos (de intentos previos o resets parciales) para que
+    // el bracket se arme desde cero solo con los bots estrictamente necesarios.
+    await this.cleanupBots(tid);
 
-    // Generar bracket
+    // Generar bracket. `generateBracket` completa con bots hasta la siguiente
+    // potencia de 2, garantizando que ningún par de la ronda 0 sean 2 bots
+    // (siempre que haya al menos size/2 humanos, cosa que cumple la formula).
     let botIndex = 0;
     const createdBotIds: string[] = [];
     const { bracket, bots: botIds } = generateBracket({
@@ -178,6 +169,23 @@ export class BracketService implements OnModuleInit {
       BRACKET_TTL_SECONDS,
     );
     this.logger.log(`tournament ${tid} reset`);
+  }
+
+  /**
+   * Elimina todos los bots previamente registrados en el torneo (si los hay)
+   * tanto del set de bots como del set general de jugadores y de Redis.
+   * Se ejecuta al iniciar un torneo para evitar bots huérfanos que no
+   * participen del bracket.
+   */
+  private async cleanupBots(tid: string): Promise<void> {
+    const botIds = await this.redis.client.smembers(RedisKeys.tournamentBots(tid));
+    if (botIds.length === 0) return;
+    for (const pid of botIds) {
+      await this.redis.client.del(RedisKeys.player(pid));
+    }
+    await this.redis.client.del(RedisKeys.tournamentBots(tid));
+    await this.redis.client.srem(RedisKeys.tournamentPlayers(tid), ...botIds);
+    this.logger.log(`cleaned up ${botIds.length} orphan bot(s) for ${tid}`);
   }
 
   // ==========================================================================

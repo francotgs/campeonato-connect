@@ -6,7 +6,6 @@ import { CLIENT_EVENTS, SERVER_EVENTS } from "@campeonato/domain";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
-  Bot,
   CheckCircle2,
   Loader2,
   Pause,
@@ -237,7 +236,6 @@ export function AdminPanel({ token }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [botsToAdd, setBotsToAdd] = useState<number>(1);
 
   const socketRef = useRef<Socket | null>(null);
 
@@ -339,23 +337,6 @@ export function AdminPanel({ token }: Props) {
     const ack = (await emit(CLIENT_EVENTS.ADMIN_RESET)) as { ok: boolean };
     setLoading(null);
     toast(ack?.ok, ack?.ok ? "Torneo reseteado" : "Error al resetear");
-  };
-
-  const handleAddBots = async () => {
-    const count = Math.max(1, Math.min(64, Math.floor(botsToAdd)));
-    setLoading("addBots");
-    const ack = (await emit(CLIENT_EVENTS.ADMIN_ADD_BOTS, { count })) as {
-      ok: boolean;
-      added?: number;
-      totalPlayers?: number;
-    };
-    setLoading(null);
-    toast(
-      ack?.ok,
-      ack?.ok
-        ? `${ack.added ?? count} bot${(ack.added ?? count) === 1 ? "" : "s"} agregado${(ack.added ?? count) === 1 ? "" : "s"}`
-        : "Error al agregar bots",
-    );
   };
 
   const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
@@ -514,60 +495,12 @@ export function AdminPanel({ token }: Props) {
             />
           </div>
 
-          {status === "registration_open" && (
-            <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <div className="inline-flex items-center gap-2 rounded-xl border border-default bg-white/5 px-3 py-2">
-                <Bot className="w-4 h-4 text-white/60" />
-                <label
-                  htmlFor="admin-bots-count"
-                  className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold"
-                >
-                  Bots
-                </label>
-                <input
-                  id="admin-bots-count"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={64}
-                  value={botsToAdd}
-                  onChange={(e) => {
-                    const n = Number(e.target.value);
-                    setBotsToAdd(Number.isFinite(n) ? n : 1);
-                  }}
-                  className="w-14 bg-transparent text-white font-mono text-sm text-center outline-none focus-visible:outline-none"
-                  disabled={!!loading}
-                />
-              </div>
-              <ActionButton
-                label={botsToAdd === 1 ? "Agregar 1 bot" : `Agregar ${botsToAdd} bots`}
-                icon={<Bot className="w-4 h-4" />}
-                onClick={handleAddBots}
-                loading={loading === "addBots"}
-                disabled={!!loading || botsToAdd < 1}
-              />
-              <span className="text-[11px] text-white/40 ml-1 max-w-[260px]">
-                Útil para probar con poca gente (ej. 1 humano + 1 bot).
-              </span>
-            </div>
-          )}
-
           {status === "registration_open" && state.playersCount < 1 && (
             <p className="mt-3 text-xs text-amber-300 inline-flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5" />
               Necesitás al menos 1 jugador inscripto para iniciar.
             </p>
           )}
-
-          {status === "registration_open" &&
-            state.playersCount === 1 &&
-            state.bracketSize === 0 && (
-              <p className="mt-2 text-xs text-white/50 inline-flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                Con 1 sólo humano el torneo termina al instante. Agregá al menos 1 bot para
-                probar una partida real.
-              </p>
-            )}
         </section>
 
         {/* QR codes */}
