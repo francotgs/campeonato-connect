@@ -1,6 +1,7 @@
 import {
   CLIENT_EVENTS,
   SERVER_EVENTS,
+  adminAddBotsPayloadSchema,
   adminOpenRegistrationPayloadSchema,
   adminPausePayloadSchema,
   adminResetPayloadSchema,
@@ -122,6 +123,36 @@ export class AdminGateway {
     await this.broadcastTournamentState(payload.tournamentId);
     this.logger.log(`admin:resume tid=${payload.tournamentId}`);
     return { ok: true };
+  }
+
+  /**
+   * Agrega N bots al torneo. Util para:
+   *  - Probar el flujo completo con un solo humano (ej: 1 humano + 1 bot).
+   *  - Completar cupo cuando faltan jugadores para llegar a una potencia de 2
+   *    sin esperar a que se llene el bracket con bots automaticos al iniciar.
+   * Solo permitido en `registration_open`.
+   */
+  @SubscribeMessage(CLIENT_EVENTS.ADMIN_ADD_BOTS)
+  async onAddBots(
+    @MessageBody() body: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<{ ok: true; added: number; totalPlayers: number }> {
+    this.requireAdmin(client);
+    const payload = adminAddBotsPayloadSchema.parse(body);
+    const tournament = await this.tournaments.mustGet(payload.tournamentId);
+    if (tournament.status !== "registration_open") {
+      throw new GameError(
+        "TOURNAMENT_STARTED",
+        "bots can only be added while registration is open",
+      );
+    }
+    const added = await this.bots.ensureBots(payload.tournamentId, payload.count);
+    await this.broadcastTournamentState(payload.tournamentId);
+    const totalPlayers = (await this.tournaments.listPlayerIds(payload.tournamentId)).length;
+    this.logger.log(
+      `admin:add_bots tid=${payload.tournamentId} count=${payload.count} added=${added.length} total=${totalPlayers}`,
+    );
+    return { ok: true, added: added.length, totalPlayers };
   }
 
   // ==========================================================================

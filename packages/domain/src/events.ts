@@ -31,6 +31,7 @@ export const CLIENT_EVENTS = {
   ADMIN_RESET: "admin:reset",
   ADMIN_PAUSE: "admin:pause",
   ADMIN_RESUME: "admin:resume",
+  ADMIN_ADD_BOTS: "admin:add_bots",
 } as const;
 export type ClientEventName = (typeof CLIENT_EVENTS)[keyof typeof CLIENT_EVENTS];
 
@@ -173,6 +174,21 @@ export type AdminPausePayload = z.infer<typeof adminPausePayloadSchema>;
 export const adminResumePayloadSchema = adminBasePayloadSchema;
 export type AdminResumePayload = z.infer<typeof adminResumePayloadSchema>;
 
+export const adminAddBotsPayloadSchema = adminBasePayloadSchema.extend({
+  count: z.number().int().min(1).max(64),
+});
+export type AdminAddBotsPayload = z.infer<typeof adminAddBotsPayloadSchema>;
+
+export const adminAddBotsAckSchema = z.discriminatedUnion("ok", [
+  z.object({
+    ok: z.literal(true),
+    added: z.number().int().nonnegative(),
+    totalPlayers: z.number().int().nonnegative(),
+  }),
+  errorAckSchema,
+]);
+export type AdminAddBotsAck = z.infer<typeof adminAddBotsAckSchema>;
+
 // ============================================================================
 // Servidor → Cliente
 // ============================================================================
@@ -300,6 +316,7 @@ export const CLIENT_EVENT_SCHEMAS = {
   [CLIENT_EVENTS.ADMIN_RESET]: adminResetPayloadSchema,
   [CLIENT_EVENTS.ADMIN_PAUSE]: adminPausePayloadSchema,
   [CLIENT_EVENTS.ADMIN_RESUME]: adminResumePayloadSchema,
+  [CLIENT_EVENTS.ADMIN_ADD_BOTS]: adminAddBotsPayloadSchema,
 } as const;
 
 export const SERVER_EVENT_SCHEMAS = {
