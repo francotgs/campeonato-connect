@@ -6,6 +6,7 @@ import type {
   MatchEndedEvent,
   MatchStartedEvent,
   MatchStartingEvent,
+  MatchTiebreakerStartedEvent,
   PlayerEliminatedEvent,
   PlayerWaitingNextEvent,
   RoundAttributeChosenEvent,
@@ -68,6 +69,9 @@ export interface GameStore {
   opponentDeckSize: number;
   chosenAttribute: AttrKey | null; // atributo que el chooser ya eligió
   pickSent: boolean; // para evitar doble envío
+  tiebreakerActive: boolean;
+  tiebreakerRoundsToPlay: number;
+  tiebreakerStartRound: number | null;
 
   // ── Resultado de ronda ────────────────────────────────────────
   lastResult: RoundResultEvent | null;
@@ -106,7 +110,7 @@ export interface GameStore {
   onRoundStarted: (data: RoundStartedEvent) => void;
   onRoundAttributeChosen: (data: RoundAttributeChosenEvent) => void;
   onRoundResult: (data: RoundResultEvent) => void;
-  onMatchTiebreakerStarted: () => void;
+  onMatchTiebreakerStarted: (data: MatchTiebreakerStartedEvent) => void;
   onMatchEnded: (data: MatchEndedEvent) => void;
   onPlayerWaitingNext: (data: PlayerWaitingNextEvent) => void;
   onPlayerEliminated: (data: PlayerEliminatedEvent) => void;
@@ -148,6 +152,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
   opponentDeckSize: 0,
   chosenAttribute: null,
   pickSent: false,
+  tiebreakerActive: false,
+  tiebreakerRoundsToPlay: 0,
+  tiebreakerStartRound: null,
 
   // ── Resultado ─────────────────────────────────────────────────
   lastResult: null,
@@ -225,6 +232,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       matchResult: null,
       chosenAttribute: null,
       pickSent: false,
+      tiebreakerActive: false,
+      tiebreakerRoundsToPlay: 0,
+      tiebreakerStartRound: null,
     });
   },
 
@@ -233,13 +243,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   onRoundStarted: (data) => {
+    const { tiebreakerActive } = get();
     set({
       roundNumber: data.roundNumber,
       chooser: data.chooser,
       myCurrentCard: data.myCurrentCard,
       opponentCardBack: data.opponentCardBack,
       deadlineAt: data.deadlineAt,
-      phase: "in_match",
+      phase: tiebreakerActive ? "tiebreaker" : "in_match",
       lastResult: null,
       chosenAttribute: null,
       pickSent: false,
@@ -259,13 +270,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
   },
 
-  onMatchTiebreakerStarted: () => {
-    set({ phase: "tiebreaker" });
-    // vuelve a in_match cuando llegue el próximo round:started
+  onMatchTiebreakerStarted: (data) => {
+    const { roundNumber } = get();
+    set({
+      phase: "tiebreaker",
+      tiebreakerActive: true,
+      tiebreakerRoundsToPlay: data.roundsToPlay,
+      tiebreakerStartRound: roundNumber + 1,
+    });
+    // Se mantiene visible como desempate cuando llegue el próximo round:started.
   },
 
   onMatchEnded: (data) => {
-    set({ matchResult: data, phase: "match_ended" });
+    set({ matchResult: data, phase: "match_ended", tiebreakerActive: false });
   },
 
   onPlayerWaitingNext: (_data) => {

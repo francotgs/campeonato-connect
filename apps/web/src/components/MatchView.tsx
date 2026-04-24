@@ -4,10 +4,10 @@ import { BrandBackground, Panel, StatusPill } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { getSocket } from "@/lib/socket";
 import { useGameStore } from "@/lib/store";
-import type { AttrKey } from "@campeonato/domain";
+import type { AttrKey, MatchEndReason } from "@campeonato/domain";
 import { CLIENT_EVENTS } from "@campeonato/domain";
 import { AnimatePresence, motion } from "framer-motion";
-import { Home, LogOut, Swords } from "lucide-react";
+import { Clock3, Home, LogOut, Swords } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { MatchTimer } from "./MatchTimer";
@@ -34,6 +34,9 @@ export function MatchView() {
     opponentDeckSize,
     chosenAttribute,
     pickSent,
+    tiebreakerActive,
+    tiebreakerRoundsToPlay,
+    tiebreakerStartRound,
     phase,
     lastResult,
     matchResult,
@@ -42,6 +45,10 @@ export function MatchView() {
   const isMyTurn = mySlot !== null && chooser === mySlot;
   const isWinner = matchResult?.winnerId === store.playerId;
   const isPractice = store.sessionMode === "practice";
+  const tiebreakerRound =
+    tiebreakerActive && tiebreakerStartRound !== null
+      ? Math.max(1, Math.min(tiebreakerRoundsToPlay, roundNumber - tiebreakerStartRound + 1))
+      : null;
 
   const handlePickAttribute = useCallback(
     (attr: AttrKey) => {
@@ -73,6 +80,11 @@ export function MatchView() {
   }, [phase]);
 
   if (phase === "match_ended" && matchResult) {
+    const myFinalDeckSize =
+      mySlot === 1 ? matchResult.stats.finalDeckSizes[1] : matchResult.stats.finalDeckSizes[0];
+    const opponentFinalDeckSize =
+      mySlot === 1 ? matchResult.stats.finalDeckSizes[0] : matchResult.stats.finalDeckSizes[1];
+
     return (
       <BrandBackground variant={isWinner ? "celebrate" : "subtle"}>
         <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center gap-6">
@@ -91,8 +103,11 @@ export function MatchView() {
               {isWinner ? "¡GANASTE!" : "PERDISTE"}
             </h2>
             <p className="text-white/60 text-sm">
-              Motivo: <span className="text-white font-medium">{matchResult.reason}</span> · Rondas
-              jugadas:{" "}
+              Motivo:{" "}
+              <span className="text-white font-medium">
+                {formatMatchEndReason(matchResult.reason)}
+              </span>{" "}
+              · Rondas jugadas:{" "}
               <span className="text-white font-medium">{matchResult.stats.roundsPlayed}</span>
             </p>
           </motion.div>
@@ -100,16 +115,12 @@ export function MatchView() {
           <Panel className="px-6 py-4 flex gap-10 text-center">
             <div>
               <p className="text-white/40 text-[10px] uppercase tracking-widest">Tu mazo</p>
-              <p className="text-2xl font-black tabular-nums">
-                {matchResult.stats.finalDeckSizes[0]}
-              </p>
+              <p className="text-2xl font-black tabular-nums">{myFinalDeckSize}</p>
             </div>
             <div className="w-px bg-white/10" />
             <div>
               <p className="text-white/40 text-[10px] uppercase tracking-widest">Rival</p>
-              <p className="text-2xl font-black tabular-nums">
-                {matchResult.stats.finalDeckSizes[1]}
-              </p>
+              <p className="text-2xl font-black tabular-nums">{opponentFinalDeckSize}</p>
             </div>
           </Panel>
 
@@ -140,7 +151,18 @@ export function MatchView() {
             </p>
           </div>
 
-          {endsAt && <MatchTimer endsAt={endsAt} totalMs={120_000} />}
+          {tiebreakerActive ? (
+            <div className="flex flex-col items-center gap-1">
+              <StatusPill tone="warning">Desempate</StatusPill>
+              {tiebreakerRound !== null && (
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/45">
+                  {tiebreakerRound}/{tiebreakerRoundsToPlay}
+                </span>
+              )}
+            </div>
+          ) : (
+            endsAt && <MatchTimer endsAt={endsAt} totalMs={120_000} />
+          )}
 
           <div className="text-right">
             <p className="text-white/40 text-[10px] uppercase tracking-widest">Ronda</p>
@@ -161,6 +183,22 @@ export function MatchView() {
             <div className="size-2 rounded-full bg-red-400" />
           </div>
         </div>
+
+        {tiebreakerActive && (
+          <motion.div
+            className="mx-4 mb-3 rounded-2xl border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-center"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="inline-flex items-center gap-2 text-amber-300 text-xs font-black uppercase tracking-widest">
+              <Clock3 className="size-3.5" />
+              Tiempo cumplido
+            </div>
+            <p className="mt-1 text-white/70 text-sm">
+              Empate en cartas: se juegan 3 rondas extra para definir la partida.
+            </p>
+          </motion.div>
+        )}
 
         {/* Turno */}
         <div className="text-center pb-3 min-h-[32px]">
@@ -265,4 +303,16 @@ export function MatchView() {
       </div>
     </BrandBackground>
   );
+}
+
+function formatMatchEndReason(reason: MatchEndReason): string {
+  const labels: Record<MatchEndReason, string> = {
+    elimination: "Un jugador se quedó sin cartas",
+    time_up: "Fin del tiempo",
+    tiebreaker: "Desempate",
+    walkover: "Victoria por ausencia del rival",
+    abandoned: "Abandono",
+    double_disconnect: "Doble desconexión",
+  };
+  return labels[reason];
 }

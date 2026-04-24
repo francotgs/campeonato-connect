@@ -72,8 +72,10 @@ export function useSocket() {
         store.onRoundResult(data as Parameters<typeof store.onRoundResult>[0]);
       });
 
-      socket.on(SERVER_EVENTS.MATCH_TIEBREAKER_STARTED, () => {
-        store.onMatchTiebreakerStarted();
+      socket.on(SERVER_EVENTS.MATCH_TIEBREAKER_STARTED, (data) => {
+        store.onMatchTiebreakerStarted(
+          data as Parameters<typeof store.onMatchTiebreakerStarted>[0],
+        );
       });
 
       socket.on(SERVER_EVENTS.MATCH_ENDED, (data) => {
