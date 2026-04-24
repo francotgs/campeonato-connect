@@ -149,9 +149,9 @@ Las cartas tienen exactamente 8 atributos comunes a todos los jugadores (incluid
 
 ### 6.1 Catálogo (`packages/cards/src/catalog.json`)
 
-- **MVP**: 30–40 cartas bien balanceadas.
+- **Catálogo actual**: 50 cartas bien balanceadas.
 - **v2**: hasta 90–100 cartas.
-- Al menos **8 países distintos** en MVP (16 en v2).
+- Selecciones actuales: **16 países** de alto reconocimiento/ranking internacional.
 - Mix de posiciones: ~30% DEL, ~30% MED, ~25% DEF, ~15% ARQ.
 - Ratings de referencia **inspirados** en FIFA/EA FC pero **no copiados**; sin escudos de clubes ni marcas registradas.
 
@@ -175,12 +175,19 @@ Las cartas tienen exactamente 8 atributos comunes a todos los jugadores (incluid
     reflejos: 10
   },
   art: {
-    // solo referencias a assets; no URLs externas
+    // solo referencias a assets locales; no URLs externas en runtime
     portraitKey: "mbappe_portrait",
     gradient: ["#0F4C81", "#F8C100"]
   }
 }
 ```
+
+Las fotos de jugadores viven en `apps/web/public/cards/players/` y se resuelven
+desde `art.portraitKey`. Deben ser assets locales optimizados y versionados, no
+hotlinks. Los créditos/licencias de las imágenes viven en
+`apps/web/public/cards/players/_credits.json`. El script
+`scripts/fetch-card-portraits.mjs` permite regenerar los retratos desde
+Wikipedia/Wikimedia Commons.
 
 ### 6.3 Distribución a partidas
 
@@ -944,7 +951,7 @@ Cada fase debe cerrarse antes de empezar la siguiente. Cada una es un commit o s
 - [ ] `packages/domain/match-rules.ts`: `resolveRound`, `drawCard`, `winnerByCount`.
 - [ ] `packages/domain/bracket-rules.ts`: `generateBracket`, `advanceBracket`.
 - [ ] `packages/domain/match-fsm.ts`: transiciones puras.
-- [ ] `packages/cards/catalog.json`: 30–35 cartas balanceadas.
+- [ ] `packages/cards/catalog.json`: 50 cartas balanceadas.
 - [ ] 3–5 tests Vitest cubriendo: ronda normal, empate, bracket 247 humanos, bot pick, avance de bracket.
 
 ### Fase 2 — Loop de partida vía Socket.IO (4–5 hs)

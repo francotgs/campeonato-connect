@@ -1,9 +1,11 @@
 "use client";
 
+import { getCardPortraitSrc } from "@/lib/cardPortraits";
 import { cn } from "@/lib/utils";
 import type { AttrKey, Card } from "@campeonato/domain";
+import Image from "next/image";
+import { useMemo, useState } from "react";
 
-// Orden y etiquetas de los 8 atributos
 const ATTRIBUTES: { key: AttrKey; label: string }[] = [
   { key: "velocidad", label: "VEL" },
   { key: "tiro", label: "TIR" },
@@ -15,11 +17,11 @@ const ATTRIBUTES: { key: AttrKey; label: string }[] = [
   { key: "reflejos", label: "REF" },
 ];
 
-const POSITION_COLORS: Record<string, string> = {
-  DEL: "bg-red-500",
-  MED: "bg-green-500",
-  DEF: "bg-blue-500",
-  ARQ: "bg-yellow-500",
+const POSITION_STYLES: Record<string, string> = {
+  DEL: "border-red-300/70 bg-red-500/20 text-red-100",
+  MED: "border-emerald-300/70 bg-emerald-500/20 text-emerald-100",
+  DEF: "border-sky-300/70 bg-sky-500/20 text-sky-100",
+  ARQ: "border-amber-300/70 bg-amber-500/20 text-amber-100",
 };
 
 interface PlayerCardProps {
@@ -46,55 +48,93 @@ export function PlayerCard({
   compact = false,
 }: PlayerCardProps) {
   const [from, to] = card.art.gradient;
-  const posColor = POSITION_COLORS[card.position] ?? "bg-slate-500";
+  const portraitSrc = getCardPortraitSrc(card.art.portraitKey);
+  const [failedPortraitKey, setFailedPortraitKey] = useState<string | null>(null);
+  const imageFailed = failedPortraitKey === card.art.portraitKey;
+  const initials = useMemo(() => getInitials(card.name), [card.name]);
+  const positionStyle = POSITION_STYLES[card.position] ?? "border-white/30 bg-white/10 text-white";
 
   return (
     <div
       className={cn(
-        "rounded-2xl overflow-hidden shadow-2xl select-none",
-        compact ? "w-48" : "w-full max-w-sm",
+        "relative overflow-hidden rounded-xl border border-white/10 bg-[var(--bg-elevated)] shadow-2xl select-none",
+        "ring-1 ring-black/20",
+        compact ? "w-52" : "w-full max-w-sm",
         className,
       )}
     >
-      {/* Header con gradiente */}
       <div
-        className="relative px-4 pt-4 pb-6"
-        style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
+        className={cn("relative overflow-hidden", compact ? "h-44" : "h-72")}
+        style={{
+          background: `linear-gradient(135deg, ${from}, ${to})`,
+        }}
       >
-        {/* Overall */}
-        <div className="absolute top-3 right-3 flex flex-col items-center">
-          <span className="text-white/70 text-[10px] font-semibold uppercase leading-none">
-            OVR
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_15%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(to_bottom,rgba(5,7,15,0.05),rgba(5,7,15,0.72))]" />
+        <div className="absolute inset-x-4 bottom-0 h-px bg-white/25" />
+
+        {portraitSrc && !imageFailed ? (
+          <Image
+            src={portraitSrc}
+            alt={card.name}
+            fill
+            sizes={compact ? "208px" : "(max-width: 640px) 92vw, 384px"}
+            priority={false}
+            className="object-cover object-top"
+            onError={() => setFailedPortraitKey(card.art.portraitKey)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-6xl font-black text-white/25">{initials}</span>
+          </div>
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-b from-black/12 via-transparent to-black/88" />
+
+        <div
+          className={cn(
+            "absolute left-3 top-3 grid place-items-center rounded-lg border border-white/25 bg-black/45 backdrop-blur-md shadow-xl",
+            compact ? "size-12" : "size-16",
+          )}
+        >
+          <span className="text-[9px] font-black uppercase leading-none text-white/55">OVR</span>
+          <span
+            className={cn(
+              "font-black tabular-nums leading-none",
+              compact ? "text-2xl" : "text-3xl",
+            )}
+          >
+            {card.overall}
           </span>
-          <span className="text-white text-2xl font-black leading-tight">{card.overall}</span>
         </div>
 
-        {/* Posición */}
-        <span
-          className={cn(
-            "inline-block text-white text-[10px] font-bold px-2 py-0.5 rounded-full mb-2",
-            posColor,
-          )}
-        >
-          {card.position}
-        </span>
+        <div className="absolute right-3 top-3 flex flex-col items-end gap-2">
+          <span
+            className={cn(
+              "rounded-md border px-2 py-1 text-[10px] font-black uppercase leading-none backdrop-blur-md",
+              positionStyle,
+            )}
+          >
+            {card.position}
+          </span>
+          <span className="rounded-md border border-white/20 bg-black/35 px-2 py-1 text-[10px] font-black uppercase leading-none text-white/85 backdrop-blur-md">
+            {card.country}
+          </span>
+        </div>
 
-        {/* Nombre */}
-        <h2
-          className={cn(
-            "text-white font-black leading-tight drop-shadow",
-            compact ? "text-base" : "text-xl",
-          )}
-        >
-          {card.name}
-        </h2>
-
-        {/* País */}
-        <p className="text-white/70 text-xs mt-0.5">{card.country}</p>
+        <div className="absolute inset-x-3 bottom-3">
+          <h2
+            className={cn(
+              "font-black leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]",
+              compact ? "text-base" : "text-2xl",
+            )}
+          >
+            {card.name}
+          </h2>
+          {!compact && <div className="mt-2 h-1 w-24 rounded-full bg-white/35" />}
+        </div>
       </div>
 
-      {/* Atributos */}
-      <div className="bg-[var(--bg-elevated)] divide-y divide-white/5">
+      <div className={cn("grid grid-cols-2 gap-1.5", compact ? "p-2" : "p-3")}>
         {ATTRIBUTES.map(({ key, label }) => {
           const value = card.attributes[key];
           const isSelected = selectedAttribute === key;
@@ -106,37 +146,52 @@ export function PlayerCard({
               key={key}
               type="button"
               disabled={!interactive || isDisabled || !!selectedAttribute}
+              aria-pressed={isSelected || isHighlighted}
               onClick={() => interactive && !selectedAttribute && onPickAttribute?.(key)}
               className={cn(
-                "w-full flex items-center justify-between px-4 transition-colors",
-                compact ? "py-1.5" : "py-2.5",
+                "relative overflow-hidden rounded-md border bg-white/[0.045] text-left transition",
+                compact ? "min-h-10 px-2 py-1.5" : "min-h-12 px-2.5 py-2",
                 interactive && !selectedAttribute
-                  ? "cursor-pointer hover:bg-white/10 active:bg-white/20"
-                  : "cursor-default",
-                isSelected && "bg-emerald-900/40 border-l-2 border-emerald-400",
-                isHighlighted && "bg-amber-900/40 border-l-2 border-amber-400",
+                  ? "cursor-pointer border-white/15 hover:border-emerald-300/70 hover:bg-emerald-400/10 active:scale-[0.98]"
+                  : "cursor-default border-white/10",
+                isSelected &&
+                  "border-emerald-300/80 bg-emerald-400/[0.18] shadow-[0_0_18px_rgba(52,211,153,0.22)]",
+                isHighlighted &&
+                  "border-amber-300/80 bg-amber-400/[0.18] shadow-[0_0_18px_rgba(251,191,36,0.18)]",
                 isDisabled && "opacity-40",
               )}
             >
               <span
-                className={cn(
-                  "text-xs font-bold tracking-widest uppercase",
-                  isSelected
-                    ? "text-emerald-400"
-                    : isHighlighted
-                      ? "text-amber-400"
-                      : "text-white/50",
-                )}
-              >
-                {label}
-              </span>
-              <span
-                className={cn(
-                  "text-lg font-black tabular-nums",
-                  isSelected ? "text-emerald-300" : isHighlighted ? "text-amber-300" : "text-white",
-                )}
-              >
-                {value}
+                className="absolute inset-y-0 left-0 bg-white/[0.08]"
+                style={{ width: `${value}%` }}
+              />
+              <span className="relative flex items-center justify-between gap-2">
+                <span
+                  className={cn(
+                    "font-black uppercase tracking-widest",
+                    compact ? "text-[9px]" : "text-[10px]",
+                    isSelected
+                      ? "text-emerald-200"
+                      : isHighlighted
+                        ? "text-amber-200"
+                        : "text-white/58",
+                  )}
+                >
+                  {label}
+                </span>
+                <span
+                  className={cn(
+                    "font-black tabular-nums leading-none",
+                    compact ? "text-base" : "text-xl",
+                    isSelected
+                      ? "text-emerald-100"
+                      : isHighlighted
+                        ? "text-amber-100"
+                        : "text-white",
+                  )}
+                >
+                  {value}
+                </span>
               </span>
             </button>
           );
@@ -158,13 +213,26 @@ export function CardBack({
   return (
     <div
       className={cn(
-        "rounded-2xl shadow-xl flex items-center justify-center",
+        "relative overflow-hidden rounded-xl border border-white/10 shadow-xl flex items-center justify-center",
         "w-full max-w-sm aspect-[3/4]",
         className,
       )}
       style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
     >
-      <span className="text-4xl opacity-30">?</span>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.24),transparent_32%),linear-gradient(135deg,rgba(0,0,0,0.18),rgba(0,0,0,0.58))]" />
+      <div className="absolute inset-3 rounded-lg border border-white/[0.18]" />
+      <span className="relative text-sm font-black uppercase tracking-[0.35em] text-white/55">
+        4Match
+      </span>
     </div>
   );
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 }

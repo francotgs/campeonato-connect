@@ -21,45 +21,255 @@
     }
   },
   {
-    "id": "haaland",
-    "name": "Erling Haaland",
-    "country": "NO",
+    "id": "dembele",
+    "name": "Ousmane Dembélé",
+    "country": "FR",
     "position": "DEL",
-    "overall": 91,
+    "overall": 86,
     "attributes": {
-      "velocidad": 86,
-      "tiro": 95,
-      "dribbling": 80,
-      "pase": 74,
-      "defensa": 42,
-      "fisico": 91,
-      "regate": 78,
-      "reflejos": 14
-    },
-    "art": {
-      "portraitKey": "haaland",
-      "gradient": ["#BA0C2F", "#00205B"]
-    }
-  },
-  {
-    "id": "vinicius",
-    "name": "Vinicius Jr.",
-    "country": "BR",
-    "position": "DEL",
-    "overall": 90,
-    "attributes": {
-      "velocidad": 96,
+      "velocidad": 92,
       "tiro": 86,
-      "dribbling": 94,
-      "pase": 80,
-      "defensa": 32,
-      "fisico": 70,
-      "regate": 93,
+      "dribbling": 91,
+      "pase": 84,
+      "defensa": 37,
+      "fisico": 69,
+      "regate": 90,
       "reflejos": 11
     },
     "art": {
-      "portraitKey": "vinicius",
-      "gradient": ["#009C3B", "#FEDF00"]
+      "portraitKey": "dembele",
+      "gradient": ["#002654", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "saliba",
+    "name": "William Saliba",
+    "country": "FR",
+    "position": "DEF",
+    "overall": 85,
+    "attributes": {
+      "velocidad": 82,
+      "tiro": 38,
+      "dribbling": 68,
+      "pase": 78,
+      "defensa": 88,
+      "fisico": 86,
+      "regate": 62,
+      "reflejos": 17
+    },
+    "art": {
+      "portraitKey": "saliba",
+      "gradient": ["#002654", "#CE1126"]
+    }
+  },
+  {
+    "id": "maignan",
+    "name": "Mike Maignan",
+    "country": "FR",
+    "position": "ARQ",
+    "overall": 85,
+    "attributes": {
+      "velocidad": 54,
+      "tiro": 18,
+      "dribbling": 31,
+      "pase": 72,
+      "defensa": 54,
+      "fisico": 82,
+      "regate": 27,
+      "reflejos": 88
+    },
+    "art": {
+      "portraitKey": "maignan",
+      "gradient": ["#002654", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "rodri",
+    "name": "Rodri",
+    "country": "ES",
+    "position": "MED",
+    "overall": 91,
+    "attributes": {
+      "velocidad": 70,
+      "tiro": 82,
+      "dribbling": 86,
+      "pase": 92,
+      "defensa": 89,
+      "fisico": 88,
+      "regate": 84,
+      "reflejos": 12
+    },
+    "art": {
+      "portraitKey": "rodri",
+      "gradient": ["#AA151B", "#F1BF00"]
+    }
+  },
+  {
+    "id": "pedri",
+    "name": "Pedri",
+    "country": "ES",
+    "position": "MED",
+    "overall": 86,
+    "attributes": {
+      "velocidad": 78,
+      "tiro": 76,
+      "dribbling": 91,
+      "pase": 90,
+      "defensa": 65,
+      "fisico": 67,
+      "regate": 90,
+      "reflejos": 10
+    },
+    "art": {
+      "portraitKey": "pedri",
+      "gradient": ["#AA151B", "#F1BF00"]
+    }
+  },
+  {
+    "id": "lamine_yamal",
+    "name": "Lamine Yamal",
+    "country": "ES",
+    "position": "DEL",
+    "overall": 87,
+    "attributes": {
+      "velocidad": 88,
+      "tiro": 82,
+      "dribbling": 91,
+      "pase": 84,
+      "defensa": 35,
+      "fisico": 61,
+      "regate": 92,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "lamine_yamal",
+      "gradient": ["#AA151B", "#F1BF00"]
+    }
+  },
+  {
+    "id": "carvajal",
+    "name": "Dani Carvajal",
+    "country": "ES",
+    "position": "DEF",
+    "overall": 82,
+    "attributes": {
+      "velocidad": 81,
+      "tiro": 57,
+      "dribbling": 76,
+      "pase": 80,
+      "defensa": 84,
+      "fisico": 80,
+      "regate": 74,
+      "reflejos": 13
+    },
+    "art": {
+      "portraitKey": "carvajal",
+      "gradient": ["#AA151B", "#F1BF00"]
+    }
+  },
+  {
+    "id": "messi",
+    "name": "Lionel Messi",
+    "country": "AR",
+    "position": "DEL",
+    "overall": 90,
+    "attributes": {
+      "velocidad": 78,
+      "tiro": 91,
+      "dribbling": 94,
+      "pase": 91,
+      "defensa": 34,
+      "fisico": 65,
+      "regate": 94,
+      "reflejos": 12
+    },
+    "art": {
+      "portraitKey": "messi",
+      "gradient": ["#75AADB", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "lautaro",
+    "name": "Lautaro Martínez",
+    "country": "AR",
+    "position": "DEL",
+    "overall": 87,
+    "attributes": {
+      "velocidad": 82,
+      "tiro": 89,
+      "dribbling": 86,
+      "pase": 77,
+      "defensa": 47,
+      "fisico": 84,
+      "regate": 84,
+      "reflejos": 12
+    },
+    "art": {
+      "portraitKey": "lautaro",
+      "gradient": ["#75AADB", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "mac_allister",
+    "name": "Alexis Mac Allister",
+    "country": "AR",
+    "position": "MED",
+    "overall": 84,
+    "attributes": {
+      "velocidad": 76,
+      "tiro": 81,
+      "dribbling": 84,
+      "pase": 88,
+      "defensa": 75,
+      "fisico": 78,
+      "regate": 84,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "mac_allister",
+      "gradient": ["#75AADB", "#F6B40E"]
+    }
+  },
+  {
+    "id": "emiliano_martinez",
+    "name": "Emiliano Martínez",
+    "country": "AR",
+    "position": "ARQ",
+    "overall": 86,
+    "attributes": {
+      "velocidad": 46,
+      "tiro": 18,
+      "dribbling": 28,
+      "pase": 67,
+      "defensa": 56,
+      "fisico": 84,
+      "regate": 25,
+      "reflejos": 89
+    },
+    "art": {
+      "portraitKey": "emiliano_martinez",
+      "gradient": ["#75AADB", "#F6B40E"]
+    }
+  },
+  {
+    "id": "bellingham",
+    "name": "Jude Bellingham",
+    "country": "EN",
+    "position": "MED",
+    "overall": 91,
+    "attributes": {
+      "velocidad": 84,
+      "tiro": 87,
+      "dribbling": 90,
+      "pase": 89,
+      "defensa": 79,
+      "fisico": 85,
+      "regate": 90,
+      "reflejos": 12
+    },
+    "art": {
+      "portraitKey": "bellingham",
+      "gradient": ["#FFFFFF", "#C8102E"]
     }
   },
   {
@@ -80,238 +290,343 @@
     },
     "art": {
       "portraitKey": "kane",
-      "gradient": ["#C8102E", "#FFFFFF"]
+      "gradient": ["#FFFFFF", "#C8102E"]
     }
   },
   {
-    "id": "lautaro",
-    "name": "Lautaro Martínez",
-    "country": "AR",
+    "id": "saka",
+    "name": "Bukayo Saka",
+    "country": "EN",
     "position": "DEL",
+    "overall": 86,
+    "attributes": {
+      "velocidad": 86,
+      "tiro": 84,
+      "dribbling": 89,
+      "pase": 83,
+      "defensa": 51,
+      "fisico": 71,
+      "regate": 88,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "saka",
+      "gradient": ["#FFFFFF", "#C8102E"]
+    }
+  },
+  {
+    "id": "stones",
+    "name": "John Stones",
+    "country": "EN",
+    "position": "DEF",
+    "overall": 82,
+    "attributes": {
+      "velocidad": 72,
+      "tiro": 52,
+      "dribbling": 76,
+      "pase": 82,
+      "defensa": 85,
+      "fisico": 81,
+      "regate": 72,
+      "reflejos": 14
+    },
+    "art": {
+      "portraitKey": "stones",
+      "gradient": ["#FFFFFF", "#C8102E"]
+    }
+  },
+  {
+    "id": "bruno_fernandes",
+    "name": "Bruno Fernandes",
+    "country": "PT",
+    "position": "MED",
     "overall": 87,
     "attributes": {
-      "velocidad": 84,
-      "tiro": 91,
-      "dribbling": 85,
-      "pase": 76,
-      "defensa": 44,
-      "fisico": 80,
-      "regate": 84,
+      "velocidad": 76,
+      "tiro": 88,
+      "dribbling": 86,
+      "pase": 90,
+      "defensa": 70,
+      "fisico": 76,
+      "regate": 87,
       "reflejos": 12
     },
     "art": {
-      "portraitKey": "lautaro",
-      "gradient": ["#75AADB", "#FFFFFF"]
+      "portraitKey": "bruno_fernandes",
+      "gradient": ["#006600", "#FF0000"]
     }
   },
   {
-    "id": "leao",
+    "id": "vitinha",
+    "name": "Vitinha",
+    "country": "PT",
+    "position": "MED",
+    "overall": 84,
+    "attributes": {
+      "velocidad": 79,
+      "tiro": 78,
+      "dribbling": 88,
+      "pase": 88,
+      "defensa": 72,
+      "fisico": 72,
+      "regate": 88,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "vitinha",
+      "gradient": ["#006600", "#FF0000"]
+    }
+  },
+  {
+    "id": "rafael_leao",
     "name": "Rafael Leão",
     "country": "PT",
     "position": "DEL",
     "overall": 85,
     "attributes": {
       "velocidad": 92,
-      "tiro": 82,
-      "dribbling": 89,
-      "pase": 74,
-      "defensa": 35,
+      "tiro": 83,
+      "dribbling": 88,
+      "pase": 78,
+      "defensa": 33,
       "fisico": 76,
-      "regate": 88,
-      "reflejos": 10
-    },
-    "art": {
-      "portraitKey": "leao",
-      "gradient": ["#046A38", "#DA291C"]
-    }
-  },
-  {
-    "id": "yamal",
-    "name": "Lamine Yamal",
-    "country": "ES",
-    "position": "DEL",
-    "overall": 85,
-    "attributes": {
-      "velocidad": 86,
-      "tiro": 80,
-      "dribbling": 90,
-      "pase": 83,
-      "defensa": 38,
-      "fisico": 66,
       "regate": 89,
       "reflejos": 12
     },
     "art": {
-      "portraitKey": "yamal",
-      "gradient": ["#AA151B", "#F1BF00"]
+      "portraitKey": "rafael_leao",
+      "gradient": ["#006600", "#FF0000"]
     }
   },
   {
-    "id": "werner",
-    "name": "Timo Werner",
-    "country": "DE",
-    "position": "DEL",
-    "overall": 78,
+    "id": "ruben_dias",
+    "name": "Rúben Dias",
+    "country": "PT",
+    "position": "DEF",
+    "overall": 88,
     "attributes": {
-      "velocidad": 90,
-      "tiro": 78,
-      "dribbling": 78,
-      "pase": 72,
-      "defensa": 35,
-      "fisico": 72,
-      "regate": 76,
-      "reflejos": 13
-    },
-    "art": {
-      "portraitKey": "werner",
-      "gradient": ["#000000", "#DD0000"]
-    }
-  },
-  {
-    "id": "vlahovic",
-    "name": "Dušan Vlahović",
-    "country": "RS",
-    "position": "DEL",
-    "overall": 78,
-    "attributes": {
-      "velocidad": 74,
-      "tiro": 86,
-      "dribbling": 75,
-      "pase": 68,
-      "defensa": 40,
-      "fisico": 85,
-      "regate": 73,
-      "reflejos": 12
-    },
-    "art": {
-      "portraitKey": "vlahovic",
-      "gradient": ["#C6363C", "#0C4076"]
-    }
-  },
-  {
-    "id": "sorloth",
-    "name": "Alexander Sørloth",
-    "country": "NO",
-    "position": "DEL",
-    "overall": 76,
-    "attributes": {
-      "velocidad": 74,
-      "tiro": 82,
-      "dribbling": 70,
-      "pase": 64,
-      "defensa": 42,
-      "fisico": 86,
-      "regate": 65,
-      "reflejos": 11
-    },
-    "art": {
-      "portraitKey": "sorloth",
-      "gradient": ["#00205B", "#BA0C2F"]
-    }
-  },
-  {
-    "id": "azmoun",
-    "name": "Sardar Azmoun",
-    "country": "IR",
-    "position": "DEL",
-    "overall": 70,
-    "attributes": {
-      "velocidad": 68,
-      "tiro": 72,
-      "dribbling": 70,
-      "pase": 64,
-      "defensa": 42,
-      "fisico": 73,
-      "regate": 68,
-      "reflejos": 11
-    },
-    "art": {
-      "portraitKey": "azmoun",
-      "gradient": ["#239F40", "#DA0000"]
-    }
-  },
-  {
-    "id": "bellingham",
-    "name": "Jude Bellingham",
-    "country": "EN",
-    "position": "MED",
-    "overall": 91,
-    "attributes": {
-      "velocidad": 82,
-      "tiro": 85,
-      "dribbling": 87,
-      "pase": 89,
-      "defensa": 75,
-      "fisico": 86,
-      "regate": 88,
+      "velocidad": 72,
+      "tiro": 45,
+      "dribbling": 65,
+      "pase": 78,
+      "defensa": 91,
+      "fisico": 89,
+      "regate": 60,
       "reflejos": 14
     },
     "art": {
-      "portraitKey": "bellingham",
-      "gradient": ["#FFFFFF", "#C8102E"]
+      "portraitKey": "ruben_dias",
+      "gradient": ["#006600", "#FF0000"]
     }
   },
   {
-    "id": "rodri",
-    "name": "Rodri",
-    "country": "ES",
-    "position": "MED",
-    "overall": 91,
+    "id": "vinicius",
+    "name": "Vinicius Jr.",
+    "country": "BR",
+    "position": "DEL",
+    "overall": 90,
     "attributes": {
-      "velocidad": 68,
-      "tiro": 76,
-      "dribbling": 80,
-      "pase": 93,
-      "defensa": 86,
-      "fisico": 87,
-      "regate": 78,
+      "velocidad": 96,
+      "tiro": 87,
+      "dribbling": 94,
+      "pase": 80,
+      "defensa": 32,
+      "fisico": 70,
+      "regate": 93,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "vinicius",
+      "gradient": ["#009C3B", "#FEDF00"]
+    }
+  },
+  {
+    "id": "raphinha",
+    "name": "Raphinha",
+    "country": "BR",
+    "position": "DEL",
+    "overall": 85,
+    "attributes": {
+      "velocidad": 88,
+      "tiro": 86,
+      "dribbling": 88,
+      "pase": 82,
+      "defensa": 45,
+      "fisico": 73,
+      "regate": 87,
+      "reflejos": 12
+    },
+    "art": {
+      "portraitKey": "raphinha",
+      "gradient": ["#009C3B", "#FEDF00"]
+    }
+  },
+  {
+    "id": "marquinhos",
+    "name": "Marquinhos",
+    "country": "BR",
+    "position": "DEF",
+    "overall": 83,
+    "attributes": {
+      "velocidad": 76,
+      "tiro": 47,
+      "dribbling": 70,
+      "pase": 79,
+      "defensa": 87,
+      "fisico": 82,
+      "regate": 66,
+      "reflejos": 15
+    },
+    "art": {
+      "portraitKey": "marquinhos",
+      "gradient": ["#009C3B", "#002776"]
+    }
+  },
+  {
+    "id": "alisson",
+    "name": "Alisson Becker",
+    "country": "BR",
+    "position": "ARQ",
+    "overall": 88,
+    "attributes": {
+      "velocidad": 55,
+      "tiro": 20,
+      "dribbling": 34,
+      "pase": 72,
+      "defensa": 56,
+      "fisico": 84,
+      "regate": 29,
+      "reflejos": 91
+    },
+    "art": {
+      "portraitKey": "alisson",
+      "gradient": ["#009C3B", "#FEDF00"]
+    }
+  },
+  {
+    "id": "van_dijk",
+    "name": "Virgil van Dijk",
+    "country": "NL",
+    "position": "DEF",
+    "overall": 89,
+    "attributes": {
+      "velocidad": 78,
+      "tiro": 55,
+      "dribbling": 72,
+      "pase": 82,
+      "defensa": 91,
+      "fisico": 92,
+      "regate": 68,
       "reflejos": 16
     },
     "art": {
-      "portraitKey": "rodri",
-      "gradient": ["#F1BF00", "#AA151B"]
+      "portraitKey": "van_dijk",
+      "gradient": ["#FF4F00", "#21468B"]
     }
   },
   {
-    "id": "debruyne",
+    "id": "frenkie_de_jong",
+    "name": "Frenkie de Jong",
+    "country": "NL",
+    "position": "MED",
+    "overall": 83,
+    "attributes": {
+      "velocidad": 81,
+      "tiro": 72,
+      "dribbling": 88,
+      "pase": 88,
+      "defensa": 77,
+      "fisico": 78,
+      "regate": 87,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "frenkie_de_jong",
+      "gradient": ["#FF4F00", "#21468B"]
+    }
+  },
+  {
+    "id": "gakpo",
+    "name": "Cody Gakpo",
+    "country": "NL",
+    "position": "DEL",
+    "overall": 78,
+    "attributes": {
+      "velocidad": 82,
+      "tiro": 80,
+      "dribbling": 81,
+      "pase": 76,
+      "defensa": 42,
+      "fisico": 78,
+      "regate": 80,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "gakpo",
+      "gradient": ["#FF4F00", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "courtois",
+    "name": "Thibaut Courtois",
+    "country": "BE",
+    "position": "ARQ",
+    "overall": 88,
+    "attributes": {
+      "velocidad": 46,
+      "tiro": 18,
+      "dribbling": 30,
+      "pase": 65,
+      "defensa": 57,
+      "fisico": 86,
+      "regate": 25,
+      "reflejos": 92
+    },
+    "art": {
+      "portraitKey": "courtois",
+      "gradient": ["#000000", "#FAE042"]
+    }
+  },
+  {
+    "id": "de_bruyne",
     "name": "Kevin De Bruyne",
     "country": "BE",
     "position": "MED",
     "overall": 90,
     "attributes": {
-      "velocidad": 72,
+      "velocidad": 74,
       "tiro": 88,
-      "dribbling": 85,
-      "pase": 95,
-      "defensa": 66,
-      "fisico": 78,
-      "regate": 88,
-      "reflejos": 13
+      "dribbling": 88,
+      "pase": 94,
+      "defensa": 65,
+      "fisico": 77,
+      "regate": 89,
+      "reflejos": 12
     },
     "art": {
-      "portraitKey": "debruyne",
-      "gradient": ["#000000", "#FDDA24"]
+      "portraitKey": "de_bruyne",
+      "gradient": ["#000000", "#EF3340"]
     }
   },
   {
-    "id": "pedri",
-    "name": "Pedri",
-    "country": "ES",
-    "position": "MED",
-    "overall": 88,
+    "id": "doku",
+    "name": "Jérémy Doku",
+    "country": "BE",
+    "position": "DEL",
+    "overall": 78,
     "attributes": {
-      "velocidad": 76,
+      "velocidad": 91,
       "tiro": 74,
-      "dribbling": 89,
-      "pase": 92,
-      "defensa": 70,
-      "fisico": 70,
-      "regate": 91,
-      "reflejos": 11
+      "dribbling": 87,
+      "pase": 74,
+      "defensa": 34,
+      "fisico": 68,
+      "regate": 86,
+      "reflejos": 10
     },
     "art": {
-      "portraitKey": "pedri",
-      "gradient": ["#AA151B", "#F1BF00"]
+      "portraitKey": "doku",
+      "gradient": ["#FAE042", "#EF3340"]
     }
   },
   {
@@ -322,206 +637,38 @@
     "overall": 87,
     "attributes": {
       "velocidad": 82,
-      "tiro": 82,
-      "dribbling": 90,
-      "pase": 88,
-      "defensa": 63,
-      "fisico": 72,
-      "regate": 89,
-      "reflejos": 12
-    },
-    "art": {
-      "portraitKey": "wirtz",
-      "gradient": ["#DD0000", "#000000"]
-    }
-  },
-  {
-    "id": "barella",
-    "name": "Nicolò Barella",
-    "country": "IT",
-    "position": "MED",
-    "overall": 85,
-    "attributes": {
-      "velocidad": 80,
-      "tiro": 82,
-      "dribbling": 82,
-      "pase": 87,
-      "defensa": 80,
-      "fisico": 82,
-      "regate": 84,
-      "reflejos": 14
-    },
-    "art": {
-      "portraitKey": "barella",
-      "gradient": ["#009246", "#CE2B37"]
-    }
-  },
-  {
-    "id": "enzo",
-    "name": "Enzo Fernández",
-    "country": "AR",
-    "position": "MED",
-    "overall": 84,
-    "attributes": {
-      "velocidad": 76,
-      "tiro": 78,
-      "dribbling": 80,
-      "pase": 87,
-      "defensa": 78,
-      "fisico": 80,
-      "regate": 83,
-      "reflejos": 13
-    },
-    "art": {
-      "portraitKey": "enzo",
-      "gradient": ["#FFFFFF", "#75AADB"]
-    }
-  },
-  {
-    "id": "dejong",
-    "name": "Frenkie de Jong",
-    "country": "NL",
-    "position": "MED",
-    "overall": 84,
-    "attributes": {
-      "velocidad": 77,
-      "tiro": 72,
-      "dribbling": 87,
-      "pase": 88,
-      "defensa": 75,
-      "fisico": 78,
-      "regate": 86,
-      "reflejos": 12
-    },
-    "art": {
-      "portraitKey": "dejong",
-      "gradient": ["#FF6600", "#21468B"]
-    }
-  },
-  {
-    "id": "szoboszlai",
-    "name": "Dominik Szoboszlai",
-    "country": "HU",
-    "position": "MED",
-    "overall": 82,
-    "attributes": {
-      "velocidad": 82,
       "tiro": 83,
-      "dribbling": 83,
-      "pase": 84,
-      "defensa": 66,
-      "fisico": 78,
-      "regate": 82,
-      "reflejos": 13
-    },
-    "art": {
-      "portraitKey": "szoboszlai",
-      "gradient": ["#477050", "#CE2939"]
-    }
-  },
-  {
-    "id": "musah",
-    "name": "Yunus Musah",
-    "country": "US",
-    "position": "MED",
-    "overall": 72,
-    "attributes": {
-      "velocidad": 76,
-      "tiro": 66,
-      "dribbling": 74,
-      "pase": 72,
-      "defensa": 70,
-      "fisico": 76,
-      "regate": 72,
-      "reflejos": 12
-    },
-    "art": {
-      "portraitKey": "musah",
-      "gradient": ["#3C3B6E", "#B22234"]
-    }
-  },
-  {
-    "id": "kamada",
-    "name": "Daichi Kamada",
-    "country": "JP",
-    "position": "MED",
-    "overall": 72,
-    "attributes": {
-      "velocidad": 68,
-      "tiro": 70,
-      "dribbling": 76,
-      "pase": 78,
-      "defensa": 66,
-      "fisico": 68,
-      "regate": 74,
+      "dribbling": 91,
+      "pase": 89,
+      "defensa": 61,
+      "fisico": 70,
+      "regate": 91,
       "reflejos": 11
     },
     "art": {
-      "portraitKey": "kamada",
-      "gradient": ["#FFFFFF", "#BC002D"]
+      "portraitKey": "wirtz",
+      "gradient": ["#000000", "#DD0000"]
     }
   },
   {
-    "id": "vandijk",
-    "name": "Virgil van Dijk",
-    "country": "NL",
-    "position": "DEF",
-    "overall": 89,
+    "id": "musiala",
+    "name": "Jamal Musiala",
+    "country": "DE",
+    "position": "MED",
+    "overall": 87,
     "attributes": {
-      "velocidad": 74,
-      "tiro": 38,
-      "dribbling": 60,
-      "pase": 80,
-      "defensa": 92,
-      "fisico": 93,
-      "regate": 52,
-      "reflejos": 18
+      "velocidad": 86,
+      "tiro": 83,
+      "dribbling": 92,
+      "pase": 84,
+      "defensa": 54,
+      "fisico": 67,
+      "regate": 92,
+      "reflejos": 11
     },
     "art": {
-      "portraitKey": "vandijk",
-      "gradient": ["#21468B", "#FF6600"]
-    }
-  },
-  {
-    "id": "rubendias",
-    "name": "Rúben Dias",
-    "country": "PT",
-    "position": "DEF",
-    "overall": 88,
-    "attributes": {
-      "velocidad": 70,
-      "tiro": 34,
-      "dribbling": 56,
-      "pase": 78,
-      "defensa": 91,
-      "fisico": 89,
-      "regate": 48,
-      "reflejos": 18
-    },
-    "art": {
-      "portraitKey": "rubendias",
-      "gradient": ["#DA291C", "#046A38"]
-    }
-  },
-  {
-    "id": "saliba",
-    "name": "William Saliba",
-    "country": "FR",
-    "position": "DEF",
-    "overall": 86,
-    "attributes": {
-      "velocidad": 78,
-      "tiro": 40,
-      "dribbling": 58,
-      "pase": 76,
-      "defensa": 88,
-      "fisico": 86,
-      "regate": 54,
-      "reflejos": 17
-    },
-    "art": {
-      "portraitKey": "saliba",
-      "gradient": ["#CE1126", "#002654"]
+      "portraitKey": "musiala",
+      "gradient": ["#DD0000", "#FFCE00"]
     }
   },
   {
@@ -531,60 +678,81 @@
     "position": "DEF",
     "overall": 85,
     "attributes": {
-      "velocidad": 72,
-      "tiro": 40,
-      "dribbling": 56,
-      "pase": 75,
-      "defensa": 88,
-      "fisico": 90,
-      "regate": 50,
-      "reflejos": 17
+      "velocidad": 82,
+      "tiro": 50,
+      "dribbling": 68,
+      "pase": 76,
+      "defensa": 87,
+      "fisico": 89,
+      "regate": 63,
+      "reflejos": 16
     },
     "art": {
       "portraitKey": "rudiger",
-      "gradient": ["#DD0000", "#000000"]
+      "gradient": ["#000000", "#FFCE00"]
     }
   },
   {
-    "id": "romero",
-    "name": "Cristian Romero",
-    "country": "AR",
+    "id": "donnarumma",
+    "name": "Gianluigi Donnarumma",
+    "country": "IT",
+    "position": "ARQ",
+    "overall": 88,
+    "attributes": {
+      "velocidad": 47,
+      "tiro": 18,
+      "dribbling": 29,
+      "pase": 64,
+      "defensa": 55,
+      "fisico": 83,
+      "regate": 25,
+      "reflejos": 91
+    },
+    "art": {
+      "portraitKey": "donnarumma",
+      "gradient": ["#0066CC", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "barella",
+    "name": "Nicolò Barella",
+    "country": "IT",
+    "position": "MED",
+    "overall": 85,
+    "attributes": {
+      "velocidad": 78,
+      "tiro": 80,
+      "dribbling": 86,
+      "pase": 88,
+      "defensa": 79,
+      "fisico": 78,
+      "regate": 87,
+      "reflejos": 12
+    },
+    "art": {
+      "portraitKey": "barella",
+      "gradient": ["#0066CC", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "bastoni",
+    "name": "Alessandro Bastoni",
+    "country": "IT",
     "position": "DEF",
     "overall": 84,
     "attributes": {
       "velocidad": 75,
-      "tiro": 42,
-      "dribbling": 58,
-      "pase": 72,
-      "defensa": 87,
-      "fisico": 85,
-      "regate": 52,
-      "reflejos": 18
+      "tiro": 48,
+      "dribbling": 70,
+      "pase": 82,
+      "defensa": 88,
+      "fisico": 84,
+      "regate": 66,
+      "reflejos": 15
     },
     "art": {
-      "portraitKey": "romero",
-      "gradient": ["#75AADB", "#FFFFFF"]
-    }
-  },
-  {
-    "id": "davies",
-    "name": "Alphonso Davies",
-    "country": "CA",
-    "position": "DEF",
-    "overall": 82,
-    "attributes": {
-      "velocidad": 94,
-      "tiro": 52,
-      "dribbling": 72,
-      "pase": 76,
-      "defensa": 78,
-      "fisico": 82,
-      "regate": 72,
-      "reflejos": 16
-    },
-    "art": {
-      "portraitKey": "davies",
-      "gradient": ["#D52B1E", "#FFFFFF"]
+      "portraitKey": "bastoni",
+      "gradient": ["#0066CC", "#009246"]
     }
   },
   {
@@ -595,248 +763,290 @@
     "overall": 82,
     "attributes": {
       "velocidad": 80,
-      "tiro": 45,
-      "dribbling": 64,
-      "pase": 75,
+      "tiro": 57,
+      "dribbling": 75,
+      "pase": 79,
       "defensa": 85,
-      "fisico": 85,
-      "regate": 60,
-      "reflejos": 17
+      "fisico": 84,
+      "regate": 72,
+      "reflejos": 14
     },
     "art": {
       "portraitKey": "gvardiol",
-      "gradient": ["#171796", "#FF0000"]
+      "gradient": ["#FF0000", "#FFFFFF"]
     }
   },
   {
-    "id": "kim",
-    "name": "Kim Min-jae",
-    "country": "KR",
-    "position": "DEF",
-    "overall": 72,
-    "attributes": {
-      "velocidad": 70,
-      "tiro": 34,
-      "dribbling": 52,
-      "pase": 66,
-      "defensa": 76,
-      "fisico": 80,
-      "regate": 46,
-      "reflejos": 16
-    },
-    "art": {
-      "portraitKey": "kim",
-      "gradient": ["#003478", "#CD2E3A"]
-    }
-  },
-  {
-    "id": "akanji",
-    "name": "Manuel Akanji",
-    "country": "CH",
-    "position": "DEF",
-    "overall": 72,
-    "attributes": {
-      "velocidad": 72,
-      "tiro": 36,
-      "dribbling": 50,
-      "pase": 68,
-      "defensa": 76,
-      "fisico": 78,
-      "regate": 48,
-      "reflejos": 16
-    },
-    "art": {
-      "portraitKey": "akanji",
-      "gradient": ["#DA291C", "#FFFFFF"]
-    }
-  },
-  {
-    "id": "courtois",
-    "name": "Thibaut Courtois",
-    "country": "BE",
-    "position": "ARQ",
-    "overall": 90,
-    "attributes": {
-      "velocidad": 48,
-      "tiro": 18,
-      "dribbling": 30,
-      "pase": 68,
-      "defensa": 58,
-      "fisico": 85,
-      "regate": 24,
-      "reflejos": 94
-    },
-    "art": {
-      "portraitKey": "courtois",
-      "gradient": ["#FDDA24", "#000000"]
-    }
-  },
-  {
-    "id": "alisson",
-    "name": "Alisson Becker",
-    "country": "BR",
-    "position": "ARQ",
-    "overall": 89,
-    "attributes": {
-      "velocidad": 52,
-      "tiro": 20,
-      "dribbling": 34,
-      "pase": 74,
-      "defensa": 56,
-      "fisico": 82,
-      "regate": 30,
-      "reflejos": 92
-    },
-    "art": {
-      "portraitKey": "alisson",
-      "gradient": ["#FEDF00", "#009C3B"]
-    }
-  },
-  {
-    "id": "donnarumma",
-    "name": "Gianluigi Donnarumma",
-    "country": "IT",
-    "position": "ARQ",
-    "overall": 88,
-    "attributes": {
-      "velocidad": 46,
-      "tiro": 18,
-      "dribbling": 28,
-      "pase": 68,
-      "defensa": 54,
-      "fisico": 85,
-      "regate": 26,
-      "reflejos": 91
-    },
-    "art": {
-      "portraitKey": "donnarumma",
-      "gradient": ["#CE2B37", "#009246"]
-    }
-  },
-  {
-    "id": "maignan",
-    "name": "Mike Maignan",
-    "country": "FR",
-    "position": "ARQ",
-    "overall": 86,
-    "attributes": {
-      "velocidad": 54,
-      "tiro": 20,
-      "dribbling": 34,
-      "pase": 72,
-      "defensa": 54,
-      "fisico": 82,
-      "regate": 28,
-      "reflejos": 90
-    },
-    "art": {
-      "portraitKey": "maignan",
-      "gradient": ["#002654", "#CE1126"]
-    }
-  },
-  {
-    "id": "livakovic",
-    "name": "Dominik Livaković",
+    "id": "modric",
+    "name": "Luka Modrić",
     "country": "HR",
-    "position": "ARQ",
-    "overall": 70,
+    "position": "MED",
+    "overall": 78,
     "attributes": {
-      "velocidad": 40,
-      "tiro": 18,
-      "dribbling": 26,
-      "pase": 58,
-      "defensa": 48,
-      "fisico": 74,
-      "regate": 22,
-      "reflejos": 74
+      "velocidad": 64,
+      "tiro": 77,
+      "dribbling": 83,
+      "pase": 87,
+      "defensa": 68,
+      "fisico": 62,
+      "regate": 84,
+      "reflejos": 10
     },
     "art": {
-      "portraitKey": "livakovic",
+      "portraitKey": "modric",
       "gradient": ["#FF0000", "#171796"]
     }
   },
   {
-    "id": "muani",
-    "name": "Randal Kolo Muani",
-    "country": "FR",
-    "position": "DEL",
-    "overall": 76,
+    "id": "hakimi",
+    "name": "Achraf Hakimi",
+    "country": "MA",
+    "position": "DEF",
+    "overall": 84,
     "attributes": {
-      "velocidad": 86,
-      "tiro": 75,
-      "dribbling": 74,
-      "pase": 68,
-      "defensa": 35,
-      "fisico": 75,
-      "regate": 70,
+      "velocidad": 92,
+      "tiro": 72,
+      "dribbling": 82,
+      "pase": 82,
+      "defensa": 82,
+      "fisico": 78,
+      "regate": 82,
+      "reflejos": 13
+    },
+    "art": {
+      "portraitKey": "hakimi",
+      "gradient": ["#C1272D", "#006233"]
+    }
+  },
+  {
+    "id": "bounou",
+    "name": "Yassine Bounou",
+    "country": "MA",
+    "position": "ARQ",
+    "overall": 78,
+    "attributes": {
+      "velocidad": 43,
+      "tiro": 17,
+      "dribbling": 27,
+      "pase": 61,
+      "defensa": 52,
+      "fisico": 79,
+      "regate": 24,
+      "reflejos": 84
+    },
+    "art": {
+      "portraitKey": "bounou",
+      "gradient": ["#C1272D", "#006233"]
+    }
+  },
+  {
+    "id": "luis_diaz",
+    "name": "Luis Díaz",
+    "country": "CO",
+    "position": "DEL",
+    "overall": 84,
+    "attributes": {
+      "velocidad": 91,
+      "tiro": 83,
+      "dribbling": 89,
+      "pase": 79,
+      "defensa": 43,
+      "fisico": 74,
+      "regate": 88,
       "reflejos": 11
     },
     "art": {
-      "portraitKey": "muani",
-      "gradient": ["#002654", "#FFFFFF"]
+      "portraitKey": "luis_diaz",
+      "gradient": ["#FCD116", "#003893"]
     }
   },
   {
-    "id": "reijnders",
-    "name": "Tijjani Reijnders",
-    "country": "NL",
-    "position": "MED",
-    "overall": 77,
+    "id": "davinson_sanchez",
+    "name": "Davinson Sánchez",
+    "country": "CO",
+    "position": "DEF",
+    "overall": 78,
     "attributes": {
-      "velocidad": 74,
-      "tiro": 72,
-      "dribbling": 78,
-      "pase": 80,
-      "defensa": 66,
-      "fisico": 74,
-      "regate": 76,
-      "reflejos": 12
+      "velocidad": 77,
+      "tiro": 39,
+      "dribbling": 61,
+      "pase": 66,
+      "defensa": 80,
+      "fisico": 84,
+      "regate": 58,
+      "reflejos": 14
     },
     "art": {
-      "portraitKey": "reijnders",
-      "gradient": ["#21468B", "#FF6600"]
+      "portraitKey": "davinson_sanchez",
+      "gradient": ["#FCD116", "#CE1126"]
     }
   },
   {
-    "id": "bremer",
-    "name": "Gleison Bremer",
-    "country": "BR",
+    "id": "mane",
+    "name": "Sadio Mané",
+    "country": "SN",
+    "position": "DEL",
+    "overall": 78,
+    "attributes": {
+      "velocidad": 84,
+      "tiro": 81,
+      "dribbling": 84,
+      "pase": 76,
+      "defensa": 42,
+      "fisico": 72,
+      "regate": 83,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "mane",
+      "gradient": ["#00853F", "#FDEF42"]
+    }
+  },
+  {
+    "id": "koulibaly",
+    "name": "Kalidou Koulibaly",
+    "country": "SN",
     "position": "DEF",
     "overall": 78,
     "attributes": {
       "velocidad": 72,
-      "tiro": 38,
-      "dribbling": 50,
-      "pase": 68,
+      "tiro": 37,
+      "dribbling": 60,
+      "pase": 67,
       "defensa": 82,
-      "fisico": 84,
-      "regate": 46,
-      "reflejos": 16
+      "fisico": 86,
+      "regate": 56,
+      "reflejos": 15
     },
     "art": {
-      "portraitKey": "bremer",
-      "gradient": ["#FEDF00", "#009C3B"]
+      "portraitKey": "koulibaly",
+      "gradient": ["#00853F", "#E31B23"]
     }
   },
   {
-    "id": "kudus",
-    "name": "Mohammed Kudus",
-    "country": "GH",
+    "id": "santiago_gimenez",
+    "name": "Santiago Giménez",
+    "country": "MX",
+    "position": "DEL",
+    "overall": 78,
+    "attributes": {
+      "velocidad": 77,
+      "tiro": 82,
+      "dribbling": 78,
+      "pase": 70,
+      "defensa": 42,
+      "fisico": 79,
+      "regate": 76,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "santiago_gimenez",
+      "gradient": ["#006847", "#CE1126"]
+    }
+  },
+  {
+    "id": "edson_alvarez",
+    "name": "Edson Álvarez",
+    "country": "MX",
     "position": "MED",
     "overall": 78,
     "attributes": {
-      "velocidad": 82,
-      "tiro": 74,
-      "dribbling": 84,
+      "velocidad": 66,
+      "tiro": 68,
+      "dribbling": 73,
+      "pase": 77,
+      "defensa": 80,
+      "fisico": 84,
+      "regate": 72,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "edson_alvarez",
+      "gradient": ["#006847", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "luis_malagon",
+    "name": "Luis Malagón",
+    "country": "MX",
+    "position": "ARQ",
+    "overall": 76,
+    "attributes": {
+      "velocidad": 44,
+      "tiro": 17,
+      "dribbling": 26,
+      "pase": 58,
+      "defensa": 50,
+      "fisico": 75,
+      "regate": 23,
+      "reflejos": 80
+    },
+    "art": {
+      "portraitKey": "luis_malagon",
+      "gradient": ["#006847", "#CE1126"]
+    }
+  },
+  {
+    "id": "pulisic",
+    "name": "Christian Pulisic",
+    "country": "US",
+    "position": "DEL",
+    "overall": 82,
+    "attributes": {
+      "velocidad": 87,
+      "tiro": 82,
+      "dribbling": 86,
+      "pase": 80,
+      "defensa": 44,
+      "fisico": 67,
+      "regate": 85,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "pulisic",
+      "gradient": ["#3C3B6E", "#B22234"]
+    }
+  },
+  {
+    "id": "antonee_robinson",
+    "name": "Antonee Robinson",
+    "country": "US",
+    "position": "DEF",
+    "overall": 78,
+    "attributes": {
+      "velocidad": 88,
+      "tiro": 53,
+      "dribbling": 75,
       "pase": 76,
-      "defensa": 58,
-      "fisico": 70,
-      "regate": 82,
+      "defensa": 77,
+      "fisico": 78,
+      "regate": 73,
       "reflejos": 12
     },
     "art": {
-      "portraitKey": "kudus",
-      "gradient": ["#CE1126", "#FCD116"]
+      "portraitKey": "antonee_robinson",
+      "gradient": ["#3C3B6E", "#FFFFFF"]
+    }
+  },
+  {
+    "id": "mckennie",
+    "name": "Weston McKennie",
+    "country": "US",
+    "position": "MED",
+    "overall": 78,
+    "attributes": {
+      "velocidad": 77,
+      "tiro": 76,
+      "dribbling": 78,
+      "pase": 79,
+      "defensa": 76,
+      "fisico": 84,
+      "regate": 77,
+      "reflejos": 11
+    },
+    "art": {
+      "portraitKey": "mckennie",
+      "gradient": ["#3C3B6E", "#B22234"]
     }
   }
 ]

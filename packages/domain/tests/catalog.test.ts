@@ -14,21 +14,20 @@ const catalogRaw = JSON.parse(readFileSync(catalogPath, "utf-8")) as unknown;
 describe("catalogo de cartas (§6)", () => {
   it("pasa la validación Zod de cardSchema", () => {
     const parsed = cardSchema.array().parse(catalogRaw);
-    expect(parsed.length).toBeGreaterThanOrEqual(30);
-    expect(parsed.length).toBeLessThanOrEqual(40);
+    expect(parsed.length).toBe(50);
   });
 
-  it("cumple los mínimos de §6.1 (8+ países, mix de posiciones)", () => {
+  it("cumple la selección curada actual (16 países, mix de posiciones)", () => {
     const parsed = cardSchema.array().parse(catalogRaw);
 
     const countries = new Set(parsed.map((c) => c.country));
-    expect(countries.size).toBeGreaterThanOrEqual(8);
+    expect(countries.size).toBe(16);
 
     const countBy = (pos: string) => parsed.filter((c) => c.position === pos).length;
-    expect(countBy("DEL")).toBeGreaterThanOrEqual(5);
-    expect(countBy("MED")).toBeGreaterThanOrEqual(5);
-    expect(countBy("DEF")).toBeGreaterThanOrEqual(5);
-    expect(countBy("ARQ")).toBeGreaterThanOrEqual(3);
+    expect(countBy("DEL")).toBeGreaterThanOrEqual(14);
+    expect(countBy("MED")).toBeGreaterThanOrEqual(14);
+    expect(countBy("DEF")).toBeGreaterThanOrEqual(12);
+    expect(countBy("ARQ")).toBeGreaterThanOrEqual(6);
   });
 
   it("tiene IDs únicos", () => {

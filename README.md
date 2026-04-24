@@ -81,6 +81,18 @@ Archivos clave del deploy:
 - `apps/web/Dockerfile` — imagen multi-stage del Next.js (output standalone)
 - `apps/server/railway.json` / `apps/web/railway.json` — config de builder y healthcheck
 
+## Assets de cartas
+
+Las cartas usan fotos locales en `apps/web/public/cards/players/`, vinculadas por
+`art.portraitKey` desde `packages/cards/src/catalog.json`. Los créditos y licencias
+de Wikimedia están en `apps/web/public/cards/players/_credits.json`.
+
+Para regenerar retratos y créditos desde Wikimedia:
+
+```bash
+node scripts/fetch-card-portraits.mjs
+```
+
 Variables públicas del `web`:
 
 - `NEXT_PUBLIC_SOCKET_URL` — URL pública del `server`.
