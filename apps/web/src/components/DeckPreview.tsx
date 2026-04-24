@@ -2,10 +2,14 @@
 
 import { BrandBackground, BrandHeader, StatusPill } from "@/components/brand";
 import { Button } from "@/components/ui/button";
+import { useCountdown } from "@/hooks/useCountdown";
 import type { Card } from "@campeonato/domain";
 import { motion } from "framer-motion";
-import { Swords } from "lucide-react";
+import { CheckCircle2, Clock3, Swords } from "lucide-react";
+import { useState } from "react";
 import { PlayerCard } from "./PlayerCard";
+
+const PREVIEW_WINDOW_MS = 10_000;
 
 interface DeckPreviewProps {
   cards: Card[];
@@ -14,7 +18,11 @@ interface DeckPreviewProps {
   onReady?: () => void;
 }
 
-export function DeckPreview({ cards, opponentName, onReady }: DeckPreviewProps) {
+export function DeckPreview({ cards, opponentName, startsAt, onReady }: DeckPreviewProps) {
+  const [ready, setReady] = useState(false);
+  const { remaining, fraction } = useCountdown(startsAt, PREVIEW_WINDOW_MS);
+  const progress = Math.max(0, Math.min(100, (1 - fraction) * 100));
+
   return (
     <BrandBackground variant="subtle">
       <div className="flex flex-col min-h-screen">
@@ -42,8 +50,23 @@ export function DeckPreview({ cards, opponentName, onReady }: DeckPreviewProps) 
             Revisá tus <span className="text-emerald-400">{cards.length} cartas</span>
           </h2>
           <p className="text-white/50 text-sm mt-1">
-            Cuando estés listo, tocá el botón para confirmar.
+            La partida empieza automáticamente. Usá este tiempo para mirar tu mazo.
           </p>
+          <div className="mt-4 mx-auto w-full max-w-xs rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-white/55">
+              <span className="inline-flex items-center gap-2">
+                <Clock3 className="size-3.5 text-emerald-300" />
+                Inicio
+              </span>
+              <span className="text-emerald-300">{remaining}s</span>
+            </div>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-emerald-400 transition-[width] duration-200"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
         </motion.div>
 
         <div className="flex-1 overflow-y-auto space-y-4 px-4 pb-6">
@@ -68,9 +91,20 @@ export function DeckPreview({ cards, opponentName, onReady }: DeckPreviewProps) 
           <Button
             size="lg"
             className="w-full h-12 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-base gap-2"
-            onClick={onReady}
+            disabled={ready}
+            onClick={() => {
+              setReady(true);
+              onReady?.();
+            }}
           >
-            ¡Listo para jugar!
+            {ready ? (
+              <>
+                <CheckCircle2 className="size-4" />
+                Listo, esperando inicio
+              </>
+            ) : (
+              "Estoy listo"
+            )}
           </Button>
         </motion.div>
       </div>

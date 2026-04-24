@@ -69,7 +69,9 @@ Copiados literalmente de `specs.md` §11:
 |---|---|---|
 | Duración | 120 s | En env var `MATCH_DURATION_SECONDS` |
 | Cartas iniciales por jugador | 15 | En env var `CARDS_PER_PLAYER` |
+| Preview de mazo antes de iniciar | 10 s | Fijo |
 | Timeout de inactividad en turno | 10 s (pick automático) | `TURN_PICK_TIMEOUT_SECONDS` |
+| Demora del bot al elegir atributo | 4 s | Fijo |
 | Timeout de reconexión | 30 s | `RECONNECT_GRACE_SECONDS` |
 | Timeout de partida colgada (ambos inactivos) | 15 s | `MATCH_STALL_TIMEOUT_SECONDS` |
 | Rondas de desempate | 3 (best of 3) | Fijo |
@@ -205,9 +207,9 @@ Wikipedia/Wikimedia Commons.
 ```
 Escanea QR
   → Pantalla lobby: ingresa nombre + empresa
-  → Ve las 15 cartas de su mazo (preview, antes del partido)
+  → Ve las 15 cartas de su mazo durante 10 s (preview, antes del partido)
   → Espera que el admin inicie el torneo
-  → Notificación: "Tu partida empieza en 3... 2... 1..."
+  → Notificación: "Tu partida empieza en..."
   → Pantalla de partida: ve su carta, timer, mazo propio vs rival
   → Elige atributo (si le toca) o espera la elección del rival
   → Ve resultado de la ronda (animación verde/rojo/gris)

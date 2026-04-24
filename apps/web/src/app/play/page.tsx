@@ -199,7 +199,7 @@ function ChampionScreen() {
 }
 
 // =============================================================================
-// CountdownToStart — 3… 2… 1… antes del pitido inicial
+// CountdownToStart — cuenta regresiva breve antes del pitido inicial
 // =============================================================================
 function CountdownToStart({ startsAt }: { startsAt: number }) {
   const remaining = Math.max(0, Math.ceil((startsAt - Date.now()) / 1000));
@@ -336,7 +336,7 @@ export default function PlayPage() {
           <DeckPreview
             cards={myCards}
             opponentName={opponent.name}
-            startsAt={startsAt ?? Date.now() + 3000}
+            startsAt={startsAt ?? Date.now() + 10000}
             onReady={() => {
               socket.emit(CLIENT_EVENTS.PLAYER_READY, { msgId: crypto.randomUUID() });
             }}
