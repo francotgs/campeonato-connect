@@ -7,7 +7,8 @@ import { useGameStore } from "@/lib/store";
 import type { AttrKey } from "@campeonato/domain";
 import { CLIENT_EVENTS } from "@campeonato/domain";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogOut, Swords } from "lucide-react";
+import { Home, LogOut, Swords } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { MatchTimer } from "./MatchTimer";
 import { CardBack, PlayerCard } from "./PlayerCard";
@@ -17,6 +18,7 @@ export function MatchView() {
   const store = useGameStore();
   const abandonSentRef = useRef(false);
   const socket = getSocket();
+  const router = useRouter();
 
   const {
     matchId,
@@ -39,6 +41,7 @@ export function MatchView() {
 
   const isMyTurn = mySlot !== null && chooser === mySlot;
   const isWinner = matchResult?.winnerId === store.playerId;
+  const isPractice = store.sessionMode === "practice";
 
   const handlePickAttribute = useCallback(
     (attr: AttrKey) => {
@@ -58,6 +61,12 @@ export function MatchView() {
     abandonSentRef.current = true;
     socket.emit(CLIENT_EVENTS.MATCH_LEAVE, { msgId: crypto.randomUUID(), matchId }, () => {});
   }, [matchId, socket]);
+
+  const handleBackToStart = useCallback(() => {
+    const tid = store.tournamentId ?? "t-default";
+    store.clearAuth();
+    router.replace(`/join/${tid}`);
+  }, [router, store]);
 
   useEffect(() => {
     if (phase === "match_ended") abandonSentRef.current = false;
@@ -103,6 +112,17 @@ export function MatchView() {
               </p>
             </div>
           </Panel>
+
+          {isPractice && (
+            <Button
+              size="lg"
+              className="w-full max-w-xs h-12 bg-emerald-500 hover:bg-emerald-400 text-black font-black gap-2"
+              onClick={handleBackToStart}
+            >
+              <Home className="size-4" />
+              Volver al inicio
+            </Button>
+          )}
         </div>
       </BrandBackground>
     );

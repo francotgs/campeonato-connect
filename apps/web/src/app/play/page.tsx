@@ -274,6 +274,7 @@ export default function PlayPage() {
     const savedPlayerId = localStorage.getItem("4match:playerId");
     const savedTid = localStorage.getItem("4match:tournamentId");
     const savedName = localStorage.getItem("4match:playerName");
+    const savedMode = localStorage.getItem("4match:sessionMode");
 
     if (!savedToken || !savedPlayerId || !savedTid) {
       const tid = savedTid ?? "t-default";
@@ -282,7 +283,13 @@ export default function PlayPage() {
     }
 
     if (!store.token) {
-      store.setAuth(savedPlayerId, savedToken, savedTid, savedName ?? "");
+      store.setAuth(
+        savedPlayerId,
+        savedToken,
+        savedTid,
+        savedName ?? "",
+        savedMode === "practice" ? "practice" : "tournament",
+      );
     }
 
     updateSocketAuth(savedToken);
@@ -336,7 +343,7 @@ export default function PlayPage() {
           <DeckPreview
             cards={myCards}
             opponentName={opponent.name}
-            startsAt={startsAt ?? Date.now() + 10000}
+            startsAt={startsAt ?? Date.now() + 15000}
             onReady={() => {
               socket.emit(CLIENT_EVENTS.PLAYER_READY, { msgId: crypto.randomUUID() });
             }}

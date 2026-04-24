@@ -43,6 +43,7 @@ export interface GameStore {
   token: string | null;
   tournamentId: string | null;
   playerName: string | null;
+  sessionMode: "tournament" | "practice" | null;
 
   // ── Torneo ────────────────────────────────────────────────────
   tournament: TournamentStateEvent["tournament"] | null;
@@ -86,7 +87,13 @@ export interface GameStore {
   socketError: string | null;
 
   // ── Acciones ──────────────────────────────────────────────────
-  setAuth: (playerId: string, token: string, tournamentId: string, name: string) => void;
+  setAuth: (
+    playerId: string,
+    token: string,
+    tournamentId: string,
+    name: string,
+    mode?: "tournament" | "practice",
+  ) => void;
   clearAuth: () => void;
   setPhase: (phase: GamePhase) => void;
   setSocketError: (msg: string | null) => void;
@@ -116,6 +123,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   token: null,
   tournamentId: null,
   playerName: null,
+  sessionMode: null,
 
   // ── Torneo ────────────────────────────────────────────────────
   tournament: null,
@@ -158,14 +166,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
   socketError: null,
 
   // ── Acciones de autenticación ─────────────────────────────────
-  setAuth: (playerId, token, tournamentId, name) => {
+  setAuth: (playerId, token, tournamentId, name, mode = "tournament") => {
     if (typeof window !== "undefined") {
       localStorage.setItem("4match:token", token);
       localStorage.setItem("4match:playerId", playerId);
       localStorage.setItem("4match:tournamentId", tournamentId);
       localStorage.setItem("4match:playerName", name);
+      localStorage.setItem("4match:sessionMode", mode);
     }
-    set({ playerId, token, tournamentId, playerName: name, phase: "lobby" });
+    set({ playerId, token, tournamentId, playerName: name, sessionMode: mode, phase: "lobby" });
   },
 
   clearAuth: () => {
@@ -174,12 +183,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       localStorage.removeItem("4match:playerId");
       localStorage.removeItem("4match:tournamentId");
       localStorage.removeItem("4match:playerName");
+      localStorage.removeItem("4match:sessionMode");
     }
     set({
       playerId: null,
       token: null,
       tournamentId: null,
       playerName: null,
+      sessionMode: null,
       phase: "idle",
     });
   },

@@ -132,7 +132,7 @@ export default function JoinPage() {
       }) => {
         setPracticeLoading(false);
         if (ack.ok && ack.token && ack.playerId) {
-          setAuth(ack.playerId, ack.token, tid, practiceName);
+          setAuth(ack.playerId, ack.token, tid, practiceName, "practice");
           authed = true;
           consumeStarting();
           return;

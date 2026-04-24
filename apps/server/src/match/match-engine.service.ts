@@ -36,8 +36,8 @@ import {
 } from "./match-state";
 
 const MATCH_TTL_SECONDS = 4 * 60 * 60;
-const SHOW_RESULT_DELAY_MS = 2_500;
-const MATCH_STARTING_DELAY_MS = 10_000;
+const SHOW_RESULT_DELAY_MS = 5_000;
+const MATCH_STARTING_DELAY_MS = 15_000;
 const BOT_PICK_DELAY_MS = 4_000;
 
 type ResolvedWinner = "p0" | "p1" | "draw";
