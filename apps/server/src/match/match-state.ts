@@ -38,6 +38,7 @@ export type TiebreakerState = {
 
 export type PersistedMatchState = {
   id: string;
+  mode: "tournament" | "practice";
   tournamentId: string;
   round: number;
   bracketSlot: number;

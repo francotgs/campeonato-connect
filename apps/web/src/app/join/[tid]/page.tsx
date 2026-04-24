@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getSocket } from "@/lib/socket";
 import { useGameStore } from "@/lib/store";
-import { CLIENT_EVENTS } from "@campeonato/domain";
+import { CLIENT_EVENTS, type MatchStartingEvent, SERVER_EVENTS } from "@campeonato/domain";
 import { motion } from "framer-motion";
-import { ArrowRight, Loader2, Users } from "lucide-react";
+import { ArrowRight, Bot, Loader2, Users } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -18,11 +18,12 @@ export default function JoinPage() {
   const tid = params.tid;
 
   const setAuth = useGameStore((s) => s.setAuth);
-  const token = useGameStore((s) => s.token);
+  const onMatchStarting = useGameStore((s) => s.onMatchStarting);
 
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [loading, setLoading] = useState(false);
+  const [practiceLoading, setPracticeLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [playersCount, setPlayersCount] = useState<number | null>(null);
   const [tournamentName, setTournamentName] = useState<string | null>(null);
@@ -30,7 +31,7 @@ export default function JoinPage() {
   useEffect(() => {
     const saved = localStorage.getItem("4match:token");
     if (saved) router.replace("/play");
-  }, [router, token]);
+  }, [router]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -86,6 +87,58 @@ export default function JoinPage() {
           };
           setError(msgs[ack.code ?? ""] ?? ack.message ?? "Error al unirse.");
         }
+      },
+    );
+  };
+
+  const handlePractice = async () => {
+    setPracticeLoading(true);
+    setError(null);
+
+    const socket = getSocket();
+    if (!socket.connected) socket.connect();
+
+    const practiceName = name.trim() || "Jugador invitado";
+    let authed = false;
+    let pendingStarting: MatchStartingEvent | null = null;
+    let consumed = false;
+
+    const consumeStarting = () => {
+      if (!authed || !pendingStarting || consumed) return;
+      consumed = true;
+      onMatchStarting(pendingStarting);
+      router.push("/play");
+    };
+
+    const handleStarting = (data: MatchStartingEvent) => {
+      pendingStarting = data;
+      consumeStarting();
+    };
+
+    socket.once(SERVER_EVENTS.MATCH_STARTING, handleStarting);
+    socket.emit(
+      CLIENT_EVENTS.PRACTICE_START,
+      {
+        msgId: crypto.randomUUID(),
+        tournamentId: tid,
+        name: practiceName,
+      },
+      (ack: {
+        ok: boolean;
+        token?: string;
+        playerId?: string;
+        code?: string;
+        message?: string;
+      }) => {
+        setPracticeLoading(false);
+        if (ack.ok && ack.token && ack.playerId) {
+          setAuth(ack.playerId, ack.token, tid, practiceName);
+          authed = true;
+          consumeStarting();
+          return;
+        }
+        socket.off(SERVER_EVENTS.MATCH_STARTING, handleStarting);
+        setError(ack.message ?? "No pudimos iniciar la partida de prueba.");
       },
     );
   };
@@ -205,6 +258,26 @@ export default function JoinPage() {
               </p>
             </form>
           </Panel>
+
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={practiceLoading || loading}
+            onClick={handlePractice}
+            className="w-full h-12 border border-white/10 bg-white/[0.04] text-white/75 hover:bg-white/[0.08] hover:text-white gap-2"
+          >
+            {practiceLoading ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Preparando rival…
+              </>
+            ) : (
+              <>
+                <Bot className="size-4 text-emerald-300" />
+                Jugar una partida
+              </>
+            )}
+          </Button>
         </motion.div>
       </div>
     </BrandBackground>

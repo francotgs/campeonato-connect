@@ -51,6 +51,10 @@ pnpm dev
 #   → bracket http://localhost:3000/bracket/t-default
 ```
 
+Desde `/join/t-default` se puede entrar al torneo o iniciar una partida de
+prueba contra la CPU. La práctica usa el mismo motor de juego, pero no modifica
+el bracket ni requiere acciones del admin.
+
 > **Simular producción localmente** (mismo setup que Railway, con Docker):
 > ```bash
 > docker compose -f docker-compose.prod-local.yml up --build

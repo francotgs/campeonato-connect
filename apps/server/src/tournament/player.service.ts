@@ -71,6 +71,15 @@ export class PlayerService {
     if (!res.ok) this.logger.warn(`updateStatus conflict on ${pid}`);
   }
 
+  async updateToken(pid: string, token: string): Promise<void> {
+    const res = await this.redis.mutateJson<PersistedPlayer>(RedisKeys.player(pid), (cur) => {
+      if (!cur) return null;
+      const next = { ...cur, token };
+      return { next, result: next };
+    });
+    if (!res.ok) this.logger.warn(`updateToken conflict on ${pid}`);
+  }
+
   async setCurrentMatch(pid: string, matchId: string | null): Promise<void> {
     await this.redis.mutateJson<PersistedPlayer>(RedisKeys.player(pid), (cur) => {
       if (!cur) return null;

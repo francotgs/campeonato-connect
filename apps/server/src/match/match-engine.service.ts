@@ -89,6 +89,7 @@ export class MatchEngineService {
     player1Id: string;
     round: number;
     bracketSlot: number;
+    mode?: "tournament" | "practice";
   }): Promise<string> {
     const p0Base = await this.players.mustGet(input.player0Id);
     const p1Base = await this.players.mustGet(input.player1Id);
@@ -111,6 +112,7 @@ export class MatchEngineService {
 
     const state: PersistedMatchState = {
       id: mid,
+      mode: input.mode ?? "tournament",
       tournamentId: input.tournamentId,
       round: input.round,
       bracketSlot: input.bracketSlot,
@@ -636,6 +638,10 @@ export class MatchEngineService {
     for (const slot of [0, 1] as const) {
       const pid = state.players[slot].id;
       await this.players.setCurrentMatch(pid, null);
+      if (state.mode === "practice") {
+        await this.players.updateStatus(pid, "registered");
+        continue;
+      }
       const isWinner = slot === winnerSlot;
       await this.players.updateStatus(pid, isWinner ? "waiting_next_match" : "eliminated");
       if (!isWinner) {
@@ -647,6 +653,8 @@ export class MatchEngineService {
         this.emitter.emitToPlayer(pid, SERVER_EVENTS.PLAYER_WAITING_NEXT, {});
       }
     }
+
+    if (state.mode === "practice") return;
 
     // Notificar al BracketService via event bus (sin circular dep)
     this.matchEvents.emitMatchEnded({

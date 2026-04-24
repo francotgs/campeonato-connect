@@ -256,6 +256,10 @@ Ingresa a /admin/[token]
 
 **Principio de diseño**: una sola ruta `/play` que renderiza distinto según el estado del jugador (`not_joined`, `in_lobby`, `previewing_deck`, `waiting_match`, `in_match`, `match_ended`, `eliminated`, `champion`). Esto evita redirects innecesarios en mobile.
 
+La pantalla `/join/[tournamentId]` también ofrece una partida de práctica contra
+la CPU. Ese flujo usa el mismo motor de partidas, pero crea jugadores temporales
+fuera del bracket y no afecta panel admin, inscripción, bracket ni podio.
+
 ---
 
 ## 9. Edge cases (referencia obligatoria)
@@ -567,6 +571,7 @@ Todos incluyen `msgId: string` (UUID v4) para idempotencia.
 | Evento | Payload | Respuesta (ACK) | Notas |
 |---|---|---|---|
 | `player:join` | `{ tournamentId, name, company, msgId }` | `{ ok: true, token, playerId }` o `{ ok: false, code }` | Crea sesión. Emite `tournament:state` al room. |
+| `practice:start` | `{ tournamentId, name?, msgId }` | `{ ok: true, token, playerId, matchId }` o `{ ok: false, code }` | Crea partida 1v1 contra bot fuera del bracket. |
 | `player:reconnect` | `{ token, msgId }` | `{ ok: true, snapshot }` | Reengancha y envía estado completo. |
 | `player:ready` | `{ msgId }` | `{ ok: true }` | Marca al jugador como listo (ya vio el preview). |
 | `match:pick_attribute` | `{ matchId, roundNumber, attribute, msgId }` | `{ ok: true }` | Solo el `chooser` puede emitirlo. El resto es ignorado silenciosamente. |

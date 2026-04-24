@@ -21,6 +21,7 @@ import {
 
 export const CLIENT_EVENTS = {
   PLAYER_JOIN: "player:join",
+  PRACTICE_START: "practice:start",
   PLAYER_RECONNECT: "player:reconnect",
   PLAYER_READY: "player:ready",
   MATCH_PICK_ATTRIBUTE: "match:pick_attribute",
@@ -91,6 +92,24 @@ export const playerJoinAckSchema = z.discriminatedUnion("ok", [
   errorAckSchema,
 ]);
 export type PlayerJoinAck = z.infer<typeof playerJoinAckSchema>;
+
+export const practiceStartPayloadSchema = z.object({
+  msgId: msgIdSchema,
+  tournamentId: tournamentIdSchema,
+  name: z.string().min(1).max(40).optional(),
+});
+export type PracticeStartPayload = z.infer<typeof practiceStartPayloadSchema>;
+
+export const practiceStartAckSchema = z.discriminatedUnion("ok", [
+  z.object({
+    ok: z.literal(true),
+    token: z.string().min(1),
+    playerId: playerIdSchema,
+    matchId: matchIdSchema,
+  }),
+  errorAckSchema,
+]);
+export type PracticeStartAck = z.infer<typeof practiceStartAckSchema>;
 
 export const playerReconnectPayloadSchema = z.object({
   msgId: msgIdSchema,
@@ -296,6 +315,7 @@ export type ErrorEvent = z.infer<typeof errorEventSchema>;
 
 export const CLIENT_EVENT_SCHEMAS = {
   [CLIENT_EVENTS.PLAYER_JOIN]: playerJoinPayloadSchema,
+  [CLIENT_EVENTS.PRACTICE_START]: practiceStartPayloadSchema,
   [CLIENT_EVENTS.PLAYER_RECONNECT]: playerReconnectPayloadSchema,
   [CLIENT_EVENTS.PLAYER_READY]: playerReadyPayloadSchema,
   [CLIENT_EVENTS.MATCH_PICK_ATTRIBUTE]: matchPickAttributePayloadSchema,
