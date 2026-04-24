@@ -343,7 +343,7 @@ export default function PlayPage() {
           <DeckPreview
             cards={myCards}
             opponentName={opponent.name}
-            startsAt={startsAt ?? Date.now() + 15000}
+            startsAt={startsAt ?? Date.now() + 20000}
             onReady={() => {
               socket.emit(CLIENT_EVENTS.PLAYER_READY, { msgId: crypto.randomUUID() });
             }}

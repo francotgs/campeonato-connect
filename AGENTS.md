@@ -69,9 +69,9 @@ Copiados literalmente de `specs.md` §11:
 |---|---|---|
 | Duración | 120 s | En env var `MATCH_DURATION_SECONDS` |
 | Cartas iniciales por jugador | 15 | En env var `CARDS_PER_PLAYER` |
-| Preview de mazo antes de iniciar | 15 s | Fijo |
+| Preview de mazo antes de iniciar | 20 s | Fijo |
 | Timeout de inactividad en turno | 10 s (pick automático) | `TURN_PICK_TIMEOUT_SECONDS` |
-| Demora del bot al elegir atributo | 4 s | Fijo |
+| Demora del bot al elegir atributo | 5 s | Fijo |
 | Timeout de reconexión | 30 s | `RECONNECT_GRACE_SECONDS` |
 | Timeout de partida colgada (ambos inactivos) | 15 s | `MATCH_STALL_TIMEOUT_SECONDS` |
 | Rondas de desempate | 3 (best of 3) | Fijo |
@@ -207,7 +207,7 @@ Wikipedia/Wikimedia Commons.
 ```
 Escanea QR
   → Pantalla lobby: ingresa nombre + empresa
-  → Ve las 15 cartas de su mazo durante 15 s (preview, antes del partido)
+  → Ve las 15 cartas de su mazo durante 20 s (preview, antes del partido)
   → Espera que el admin inicie el torneo
   → Notificación: "Tu partida empieza en..."
   → Pantalla de partida: ve su carta, timer, mazo propio vs rival
@@ -737,20 +737,22 @@ type BracketMatch = {
 
 ```ts
 function botPickAttribute(botCard: Card, matchState): AttrKey {
-  // Modo "piadoso" activo (ronda >= cuartos, o diferencia de cartas contra el humano es >= 3)
+  // Modo "piadoso" activo (ronda >= cuartos, o diferencia de cartas contra el humano es >= 5)
   if (isMercifulMode(matchState)) {
     return attributeWithLowestValue(botCard);
   }
 
-  // Modo normal (ronda 1-2): bot juega subóptimo pero no torpe
-  // - 70% de las veces: elige el segundo atributo más bajo
-  // - 30% de las veces: elige un atributo aleatorio entre los 4 más bajos
-  if (Math.random() < 0.7) {
-    return sortAttributesAsc(botCard)[1];
-  } else {
-    const low4 = sortAttributesAsc(botCard).slice(0, 4);
-    return sample(low4);
-  }
+  // Modo normal: bot juega competitivo pero imperfecto
+  // - 45% de las veces: elige el mejor atributo de su carta
+  // - 35% de las veces: elige aleatorio entre sus 3 mejores atributos
+  // - 15% de las veces: elige aleatorio entre atributos medios
+  // - 5% de las veces: comete un error y elige uno de sus 3 peores atributos
+  const asc = sortAttributesAsc(botCard);
+  const roll = Math.random();
+  if (roll < 0.45) return asc.at(-1);
+  if (roll < 0.8) return sample(asc.slice(-3));
+  if (roll < 0.95) return sample(asc.slice(3, 6));
+  return sample(asc.slice(0, 3));
 }
 ```
 

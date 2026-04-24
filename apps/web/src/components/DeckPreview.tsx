@@ -9,7 +9,7 @@ import { CheckCircle2, Clock3, Swords } from "lucide-react";
 import { useState } from "react";
 import { PlayerCard } from "./PlayerCard";
 
-const PREVIEW_WINDOW_MS = 15_000;
+const PREVIEW_WINDOW_MS = 20_000;
 
 interface DeckPreviewProps {
   cards: Card[];

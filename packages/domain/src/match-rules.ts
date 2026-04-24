@@ -102,13 +102,13 @@ export type BotMatchContext = {
 
 /**
  * Modo "piadoso": el bot deja de jugar bien. Se activa cuando el bot ya
- * avanzó demasiado (≥ cuartos) o cuando está ganando por paliza (+3 cartas).
+ * avanzó demasiado (≥ cuartos) o cuando está ganando por paliza (+5 cartas).
  * Ver AGENTS.md §16.1 y §16.2.
  */
 export function isMercifulMode(ctx: BotMatchContext): boolean {
   const quartersRound = Math.max(0, Math.log2(ctx.bracketSize) - 3);
   if (ctx.tournamentRound >= quartersRound) return true;
-  if (ctx.deckDiffAgainstHuman >= 3) return true;
+  if (ctx.deckDiffAgainstHuman >= 5) return true;
   return false;
 }
 
@@ -122,6 +122,7 @@ export function pickBotAttribute(
   rng: Rng = Math.random,
 ): AttrKey {
   const asc = sortAttributesAsc(botCard);
+  const strongest = asc.at(-1);
 
   if (isMercifulMode(ctx)) {
     const chosen = asc[0];
@@ -129,17 +130,28 @@ export function pickBotAttribute(
     return chosen;
   }
 
-  if (rng() < 0.7) {
-    // Segundo atributo más bajo: apenas por encima del peor.
-    const chosen = asc[1] ?? asc[0];
-    if (!chosen) throw new Error("bot card has no attributes");
-    return chosen;
+  if (!strongest) throw new Error("bot card has no attributes");
+
+  const roll = rng();
+  if (roll < 0.45) {
+    return strongest;
   }
 
-  const low4 = asc.slice(0, 4);
-  if (low4.length === 0) throw new Error("bot card has no attributes");
-  const idx = Math.floor(rng() * low4.length);
-  const chosen = low4[Math.min(idx, low4.length - 1)];
+  if (roll < 0.8) {
+    return sampleAttr(asc.slice(-3), rng);
+  }
+
+  if (roll < 0.95) {
+    return sampleAttr(asc.slice(3, 6), rng);
+  }
+
+  return sampleAttr(asc.slice(0, 3), rng);
+}
+
+function sampleAttr(candidates: AttrKey[], rng: Rng): AttrKey {
+  if (candidates.length === 0) throw new Error("bot card has no attributes");
+  const idx = Math.floor(rng() * candidates.length);
+  const chosen = candidates[Math.min(idx, candidates.length - 1)];
   if (!chosen) throw new Error("sample index out of range");
   return chosen;
 }

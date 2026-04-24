@@ -96,8 +96,11 @@ describe("bot policy (§16.2)", () => {
     );
   });
 
-  it("modo piadoso activa si la diferencia contra el humano es ≥ 3", () => {
-    expect(isMercifulMode({ tournamentRound: 0, bracketSize: 256, deckDiffAgainstHuman: 3 })).toBe(
+  it("modo piadoso activa si la diferencia contra el humano es ≥ 5", () => {
+    expect(isMercifulMode({ tournamentRound: 0, bracketSize: 256, deckDiffAgainstHuman: 4 })).toBe(
+      false,
+    );
+    expect(isMercifulMode({ tournamentRound: 0, bracketSize: 256, deckDiffAgainstHuman: 5 })).toBe(
       true,
     );
   });
@@ -112,7 +115,7 @@ describe("bot policy (§16.2)", () => {
     expect(attr).toBe("reflejos");
   });
 
-  it("en modo normal siempre elige entre los 4 atributos más bajos", () => {
+  it("en modo normal suele elegir atributos fuertes de su carta", () => {
     const card = makeCard(
       "bot",
       attrs({
@@ -126,15 +129,15 @@ describe("bot policy (§16.2)", () => {
         reflejos: 15,
       }),
     );
-    const low4 = new Set(["reflejos", "velocidad", "tiro", "dribbling"]);
-    const rng = seededRng(7);
-    for (let i = 0; i < 30; i++) {
-      const a = pickBotAttribute(
-        card,
-        { tournamentRound: 0, bracketSize: 256, deckDiffAgainstHuman: 0 },
-        rng,
-      );
-      expect(low4.has(a)).toBe(true);
-    }
+    const ctx = { tournamentRound: 0, bracketSize: 256, deckDiffAgainstHuman: 0 };
+    expect(pickBotAttribute(card, ctx, sequenceRng([0.1]))).toBe("regate");
+    expect(pickBotAttribute(card, ctx, sequenceRng([0.6, 0.1]))).toBe("defensa");
+    expect(pickBotAttribute(card, ctx, sequenceRng([0.85, 0.4]))).toBe("pase");
+    expect(pickBotAttribute(card, ctx, sequenceRng([0.98, 0.1]))).toBe("reflejos");
   });
 });
+
+function sequenceRng(values: number[]): () => number {
+  let i = 0;
+  return () => values[i++] ?? 0;
+}
