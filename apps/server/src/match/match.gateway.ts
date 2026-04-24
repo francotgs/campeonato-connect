@@ -4,6 +4,7 @@ import {
   matchLeavePayloadSchema,
   matchPickAttributePayloadSchema,
   matchSyncPayloadSchema,
+  playerReadyPayloadSchema,
 } from "@campeonato/domain";
 import { Logger, UseFilters } from "@nestjs/common";
 import {
@@ -77,6 +78,17 @@ export class MatchGateway {
       playerId: pid,
       msgId: payload.msgId,
     });
+    return { ok: true };
+  }
+
+  @SubscribeMessage(CLIENT_EVENTS.PLAYER_READY)
+  async onPlayerReady(
+    @MessageBody() body: unknown,
+    @ConnectedSocket() client: Socket,
+  ): Promise<{ ok: true }> {
+    const payload = playerReadyPayloadSchema.parse(body);
+    const pid = await this.requirePlayer(client);
+    await this.engine.handlePlayerReady({ playerId: pid, msgId: payload.msgId });
     return { ok: true };
   }
 

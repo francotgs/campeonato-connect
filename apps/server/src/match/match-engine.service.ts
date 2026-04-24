@@ -37,7 +37,7 @@ import {
 
 const MATCH_TTL_SECONDS = 4 * 60 * 60;
 const SHOW_RESULT_DELAY_MS = 5_000;
-const MATCH_STARTING_DELAY_MS = 20_000;
+const MATCH_STARTING_DELAY_MS = 40_000;
 const BOT_PICK_DELAY_MS = 5_000;
 
 type ResolvedWinner = "p0" | "p1" | "draw";
@@ -327,6 +327,30 @@ export class MatchEngineService {
     if (!state) return;
     const leaver = this.slotForPlayer(state, args.playerId);
     await this.endMatch(args.matchId, otherSlot(leaver), "abandoned");
+  }
+
+  async handlePlayerReady(args: { playerId: string; msgId: string }): Promise<void> {
+    const player = await this.players.mustGet(args.playerId);
+    if (!player.currentMatchId) return;
+
+    const dedup = await this.redis.claimMsgId(
+      RedisKeys.matchProcessedMsgs(player.currentMatchId),
+      args.msgId,
+      MSG_DEDUP_TTL_SECONDS,
+    );
+    if (!dedup) throw new GameError("STALE_MSG", "msgId already processed", args.msgId);
+
+    const state = await this.redis.getJson<PersistedMatchState>(
+      RedisKeys.match(player.currentMatchId),
+    );
+    if (!state || state.fsm !== "WAITING_START") return;
+    if (state.mode !== "practice") return;
+
+    const playerInMatch = state.players.some((p) => p.id === args.playerId && !p.isBot);
+    if (!playerInMatch) return;
+
+    this.clearTimer(state.id, "start");
+    await this.startMatch(state.id);
   }
 
   // ==========================================================================

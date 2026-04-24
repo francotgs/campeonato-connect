@@ -4,7 +4,6 @@ import {
   SERVER_EVENTS,
   type TournamentStateEvent,
   playerJoinPayloadSchema,
-  playerReadyPayloadSchema,
   playerReconnectPayloadSchema,
   socketAuthPayloadSchema,
 } from "@campeonato/domain";
@@ -197,24 +196,6 @@ export class TournamentGateway implements OnGatewayInit, OnGatewayConnection, On
         currentMatchId: player.currentMatchId,
       },
     };
-  }
-
-  @SubscribeMessage(CLIENT_EVENTS.PLAYER_READY)
-  async onPlayerReady(
-    @MessageBody() body: unknown,
-    @ConnectedSocket() client: Socket,
-  ): Promise<{ ok: true }> {
-    const payload = playerReadyPayloadSchema.parse(body);
-    const socket = client as AuthedSocket;
-    if (!socket.data?.auth?.playerId) {
-      throw new GameError("UNAUTHORIZED", "socket has no associated player");
-    }
-    if (!(await this.claimMsgId(payload.msgId))) {
-      throw new GameError("STALE_MSG", "msgId already processed", payload.msgId);
-    }
-    // En esta fase no hacemos nada especial con `ready` (Fase 4 lo cablea a UI);
-    // dejamos el hook listo para evolucionar.
-    return { ok: true };
   }
 
   // ==========================================================================

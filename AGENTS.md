@@ -69,7 +69,7 @@ Copiados literalmente de `specs.md` §11:
 |---|---|---|
 | Duración | 120 s | En env var `MATCH_DURATION_SECONDS` |
 | Cartas iniciales por jugador | 15 | En env var `CARDS_PER_PLAYER` |
-| Preview de mazo antes de iniciar | 20 s | Fijo |
+| Instrucciones + preview de mazo antes de iniciar | 40 s | Fijo |
 | Timeout de inactividad en turno | 10 s (pick automático) | `TURN_PICK_TIMEOUT_SECONDS` |
 | Demora del bot al elegir atributo | 5 s | Fijo |
 | Timeout de reconexión | 30 s | `RECONNECT_GRACE_SECONDS` |
@@ -208,7 +208,7 @@ Wikipedia/Wikimedia Commons.
 Escanea QR
   → Pantalla lobby: ingresa nombre + empresa
   → Ve instrucciones breves de reglas y confirma para continuar
-  → Ve las 15 cartas de su mazo durante 20 s (preview, antes del partido)
+  → Ve las 15 cartas de su mazo dentro de una ventana total de 40 s (instrucciones + preview, antes del partido)
   → Espera que el admin inicie el torneo
   → Notificación: "Tu partida empieza en..."
   → Pantalla de partida: ve su carta, timer, mazo propio vs rival
@@ -576,7 +576,7 @@ Todos incluyen `msgId: string` (UUID v4) para idempotencia.
 | `player:join` | `{ tournamentId, name, company, msgId }` | `{ ok: true, token, playerId }` o `{ ok: false, code }` | Crea sesión. Emite `tournament:state` al room. |
 | `practice:start` | `{ tournamentId, name?, msgId }` | `{ ok: true, token, playerId, matchId }` o `{ ok: false, code }` | Crea partida 1v1 contra bot fuera del bracket. |
 | `player:reconnect` | `{ token, msgId }` | `{ ok: true, snapshot }` | Reengancha y envía estado completo. |
-| `player:ready` | `{ msgId }` | `{ ok: true }` | Marca al jugador como listo (ya vio el preview). |
+| `player:ready` | `{ msgId }` | `{ ok: true }` | Marca al jugador como listo (ya vio el preview). En práctica contra bot adelanta el inicio de la partida. |
 | `match:pick_attribute` | `{ matchId, roundNumber, attribute, msgId }` | `{ ok: true }` | Solo el `chooser` puede emitirlo. El resto es ignorado silenciosamente. |
 | `match:sync` | `{ matchId, msgId }` | `{ ok: true, state }` | Para recuperación tras reconexión (edge #5). |
 | `match:leave` | `{ matchId, msgId }` | `{ ok: true }` | Abandono voluntario (edge #7). |
