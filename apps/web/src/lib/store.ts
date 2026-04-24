@@ -24,6 +24,7 @@ import { create } from "zustand";
 export type GamePhase =
   | "idle" // sin conexión / sin token
   | "lobby" // inscripto, esperando inicio de torneo
+  | "instructions" // explicación breve antes del primer preview de mazo
   | "previewing" // recibió match:starting, ve su mazo antes de la partida
   | "waiting_start" // cuenta regresiva hasta que empieza la partida
   | "in_match" // partida activa
@@ -72,6 +73,7 @@ export interface GameStore {
   tiebreakerActive: boolean;
   tiebreakerRoundsToPlay: number;
   tiebreakerStartRound: number | null;
+  instructionsSeen: boolean;
 
   // ── Resultado de ronda ────────────────────────────────────────
   lastResult: RoundResultEvent | null;
@@ -101,6 +103,7 @@ export interface GameStore {
   clearAuth: () => void;
   setPhase: (phase: GamePhase) => void;
   setSocketError: (msg: string | null) => void;
+  continueFromInstructions: () => void;
   markPickSent: () => void;
   clearPickSent: () => void;
 
@@ -155,6 +158,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   tiebreakerActive: false,
   tiebreakerRoundsToPlay: 0,
   tiebreakerStartRound: null,
+  instructionsSeen: false,
 
   // ── Resultado ─────────────────────────────────────────────────
   lastResult: null,
@@ -198,12 +202,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       tournamentId: null,
       playerName: null,
       sessionMode: null,
+      instructionsSeen: false,
       phase: "idle",
     });
   },
 
   setPhase: (phase) => set({ phase }),
   setSocketError: (msg) => set({ socketError: msg }),
+  continueFromInstructions: () => set({ instructionsSeen: true, phase: "previewing" }),
   markPickSent: () => set({ pickSent: true }),
   clearPickSent: () => set({ pickSent: false }),
 
@@ -219,6 +225,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   onMatchStarting: (data) => {
+    const { instructionsSeen } = get();
     set({
       matchId: data.matchId,
       mySlot: data.mySlot,
@@ -227,7 +234,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       startingChooser: data.startingChooser,
       startsAt: data.startsAt,
       myDeckSize: data.myCards.length,
-      phase: "previewing",
+      phase: instructionsSeen ? "previewing" : "instructions",
       lastResult: null,
       matchResult: null,
       chosenAttribute: null,

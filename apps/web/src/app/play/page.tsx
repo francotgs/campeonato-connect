@@ -10,7 +10,18 @@ import { updateSocketAuth } from "@/lib/socket";
 import { useGameStore } from "@/lib/store";
 import { CLIENT_EVENTS } from "@campeonato/domain";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, LogOut, Trophy } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  LogOut,
+  MousePointerClick,
+  Repeat2,
+  Scale,
+  ShieldCheck,
+  Trophy,
+  UsersRound,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -106,6 +117,95 @@ function WaitingNextScreen() {
           {store.tournament && <p className="text-white/40 text-xs">{store.tournament.name}</p>}
         </motion.div>
         <BrandSpinner size={48} />
+      </div>
+    </BrandBackground>
+  );
+}
+
+// =============================================================================
+// InstructionsScreen — explicación breve antes del primer preview
+// =============================================================================
+function InstructionsScreen() {
+  const store = useGameStore();
+  const opponentName = store.opponent?.name ?? "tu rival";
+
+  const steps = [
+    {
+      icon: UsersRound,
+      title: "Carta contra carta",
+      text: "Cada ronda compara tu carta actual contra la del rival.",
+    },
+    {
+      icon: MousePointerClick,
+      title: "Elegí una habilidad",
+      text: "Cuando sea tu turno, tocá el atributo que más te convenga.",
+    },
+    {
+      icon: Scale,
+      title: "Gana el número más alto",
+      text: "El valor elegido se compara en ambas cartas. El ganador se queda con las dos.",
+    },
+    {
+      icon: Repeat2,
+      title: "El ganador elige después",
+      text: "Quien gana una ronda decide la habilidad de la siguiente.",
+    },
+  ];
+
+  return (
+    <BrandBackground variant="subtle">
+      <div className="flex min-h-screen items-center justify-center px-5 py-8">
+        <motion.div
+          className="w-full max-w-sm space-y-5"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="text-center space-y-3">
+            <div className="mx-auto size-16 rounded-2xl bg-emerald-500/15 ring-1 ring-emerald-400/30 flex items-center justify-center">
+              <ShieldCheck className="size-8 text-emerald-300" strokeWidth={1.8} />
+            </div>
+            <div>
+              <p className="text-emerald-300 text-[10px] font-black uppercase tracking-[0.3em]">
+                Antes de empezar
+              </p>
+              <h2 className="mt-2 text-3xl font-black text-white">Cómo se juega</h2>
+              <p className="mt-1 text-sm text-white/55">Próxima partida vs {opponentName}</p>
+            </div>
+          </div>
+
+          <Panel className="p-4 space-y-3">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <div key={step.title} className="flex gap-3 text-left">
+                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.06] ring-1 ring-white/10">
+                    <Icon className="size-4 text-emerald-300" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-black text-white">
+                      {index + 1}. {step.title}
+                    </p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-white/55">{step.text}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </Panel>
+
+          <Button
+            size="lg"
+            className="h-12 w-full bg-emerald-500 text-base font-black text-black hover:bg-emerald-400 gap-2"
+            onClick={store.continueFromInstructions}
+          >
+            Continuar al mazo
+            <ArrowRight className="size-4" />
+          </Button>
+
+          <p className="text-center text-xs text-white/40">
+            Después vas a revisar tus cartas antes del inicio.
+          </p>
+        </motion.div>
       </div>
     </BrandBackground>
   );
@@ -331,6 +431,16 @@ export default function PlayPage() {
           transition={transition}
         >
           <LobbyScreen />
+        </motion.div>
+      ) : phase === "instructions" && myCards.length > 0 && opponent ? (
+        <motion.div
+          key="instructions"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={transition}
+        >
+          <InstructionsScreen />
         </motion.div>
       ) : phase === "previewing" && myCards.length > 0 && opponent ? (
         <motion.div

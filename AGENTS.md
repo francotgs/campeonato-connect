@@ -207,6 +207,7 @@ Wikipedia/Wikimedia Commons.
 ```
 Escanea QR
   → Pantalla lobby: ingresa nombre + empresa
+  → Ve instrucciones breves de reglas y confirma para continuar
   → Ve las 15 cartas de su mazo durante 20 s (preview, antes del partido)
   → Espera que el admin inicie el torneo
   → Notificación: "Tu partida empieza en..."
@@ -256,7 +257,7 @@ Ingresa a /admin/[token]
 | `/bracket/[tournamentId]` | Vista proyectable del cuadro eliminatorio | Público/proyector |
 | `/admin/[token]` | Panel de control del torneo | Organizador |
 
-**Principio de diseño**: una sola ruta `/play` que renderiza distinto según el estado del jugador (`not_joined`, `in_lobby`, `previewing_deck`, `waiting_match`, `in_match`, `match_ended`, `eliminated`, `champion`). Esto evita redirects innecesarios en mobile.
+**Principio de diseño**: una sola ruta `/play` que renderiza distinto según el estado del jugador (`not_joined`, `in_lobby`, `instructions`, `previewing_deck`, `waiting_match`, `in_match`, `match_ended`, `eliminated`, `champion`). Esto evita redirects innecesarios en mobile.
 
 La pantalla `/join/[tournamentId]` también ofrece una partida de práctica contra
 la CPU. Ese flujo usa el mismo motor de partidas, pero crea jugadores temporales
