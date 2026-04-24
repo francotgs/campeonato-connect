@@ -156,9 +156,10 @@ git push -u origin main
 
 1. Abrí la URL `/admin/<ADMIN_TOKEN>` → tocá **Abrir inscripción**.
 2. Desde otro dispositivo (o pestaña incógnito) abrí `/join/t-default` y registrá un jugador.
-3. Repetí para sumar más jugadores. Si querés completar cupo rápido, desde admin tocá **Sumar bots hasta 8**.
-4. En admin tocá **Iniciar torneo**. La UI de los jugadores debería pasar a la pantalla de deck y arrancar las partidas.
-5. Abrí `/bracket/t-default` en una pantalla grande (proyector) → verás el árbol actualizándose en vivo.
+3. Repetí para sumar más jugadores reales. Para una prueba mínima alcanza con 1 jugador humano.
+4. En admin tocá **Iniciar torneo**. El backend completa automáticamente los slots faltantes con bots hasta la siguiente potencia de 2, arma el bracket y arranca las partidas.
+5. La UI de los jugadores debería pasar a la pantalla de deck y luego a la partida.
+6. Abrí `/bracket/t-default` en una pantalla grande (proyector) → verás el árbol actualizándose en vivo.
 
 ---
 
@@ -201,7 +202,13 @@ Ya está configurado. Cada `git push origin main` dispara un redeploy automátic
 
 ### Quiero resetear el torneo
 - Desde el panel admin → **Reset torneo** (pide confirmación doble).
-- O desde terminal: `pnpm --filter @campeonato/server admin:reset` si tenés el server local apuntando al Redis de Railway.
+- En local, con el server corriendo en `http://localhost:4000`, también podés usar el helper admin:
+
+  ```powershell
+  node --env-file=apps/server/.env apps/server/admin.mjs reset
+  ```
+
+  Comandos disponibles: `reset`, `open`, `start`, `pause`, `resume`.
 
 ---
 
@@ -212,7 +219,7 @@ Hacé este checklist **el día antes** del evento:
 - [ ] Último `git push` con la versión que querés correr ya desplegado y probado.
 - [ ] Variables de entorno del `server` y `web` revisadas y con `CORS_ORIGIN` y `NEXT_PUBLIC_SOCKET_URL` apuntándose correctamente.
 - [ ] `ADMIN_TOKEN` guardado en un lugar seguro (gestor de passwords). **Nadie más debe conocerlo.**
-- [ ] Abrir `/admin/<ADMIN_TOKEN>` y probar: abrir inscripción, sumar 8 bots, iniciar torneo, verlo llegar al campeón en el bracket, resetear.
+- [ ] Abrir `/admin/<ADMIN_TOKEN>` y probar: abrir inscripción, registrar al menos 1 jugador humano, iniciar torneo, verlo llegar al campeón en el bracket, resetear.
 - [ ] Generar el QR de inscripción desde admin y tenerlo impreso / en una slide para mostrar al evento.
 - [ ] Tener el bracket en `/bracket/t-default` abierto en un monitor grande / proyector.
 - [ ] Plan B: screenshot del bracket en caso de caída (muy improbable).

@@ -47,6 +47,8 @@ pnpm dev
 #   → web    http://localhost:3000
 #   → server http://localhost:4000  (healthcheck: GET /health)
 #   → admin  http://localhost:3000/admin/dev-admin-token
+#   → join   http://localhost:3000/join/t-default
+#   → bracket http://localhost:3000/bracket/t-default
 ```
 
 > **Simular producción localmente** (mismo setup que Railway, con Docker):
@@ -78,6 +80,16 @@ Archivos clave del deploy:
 - `apps/server/Dockerfile` — imagen multi-stage del NestJS
 - `apps/web/Dockerfile` — imagen multi-stage del Next.js (output standalone)
 - `apps/server/railway.json` / `apps/web/railway.json` — config de builder y healthcheck
+
+Variables públicas del `web`:
+
+- `NEXT_PUBLIC_SOCKET_URL` — URL pública del `server`.
+- `NEXT_PUBLIC_TOURNAMENT_ID` — torneo activo que usa `/` y el panel admin.
+- `NEXT_PUBLIC_DEFAULT_TID` — fallback compatible con Docker/Railway si no se define `NEXT_PUBLIC_TOURNAMENT_ID`.
+
+El torneo se inicia desde `/admin/<ADMIN_TOKEN>`. Al tocar **Iniciar torneo**, el
+backend arma el bracket con humanos registrados y completa automáticamente los
+slots faltantes con bots hasta la siguiente potencia de 2.
 
 ## Estado
 
